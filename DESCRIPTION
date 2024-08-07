@@ -17,3 +17,5 @@ Depends: R (>= 3.4), Matrix, FoReco
 Imports: stats, cli, methods
 RoxygenNote: 7.3.1
 Roxygen: list(markdown = TRUE)
+URL: https://github.com/danigiro/FoCo2
+BugReports: https://github.com/danigiro/FoCo2/issues
