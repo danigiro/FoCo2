@@ -1,0 +1,19 @@
+Package: FoCo2
+Type: Package
+Title: Forecast Coherent Combination
+Version: 0.1.0.001
+Authors@R: 
+    c(person(given = "Daniele",
+             family = "Girolimetto",
+             role = c("aut", "cre", "fnd"),
+             email = "daniele.girolimetto@unipd.it",
+             comment = c(ORCID = "0000-0001-9387-1232")))
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Depends: R (>= 3.4), Matrix, FoReco
+Imports: stats, cli, methods
+RoxygenNote: 7.3.1
+Roxygen: list(markdown = TRUE)

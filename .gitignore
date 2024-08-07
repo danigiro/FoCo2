@@ -1,0 +1,11 @@
+.Rhistory
+.RData
+.Rproj.user
+.DS_Store
+
+cran-comments.md
+/doc/
+/Meta/
+
+CRAN-SUBMISSION
+inst/doc
