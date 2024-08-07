@@ -1,16 +1,16 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# FoCo2 <img src="man/figures/logo.svg" alt="logo" align="right" width="200" style="border: none; float: right;"/>
+# FoCo² <img src="man/figures/logo.svg" alt="logo" align="right" width="200" style="border: none; float: right;"/>
 
 <!-- badges: start -->
 
 [![CRAN
-status](https://www.r-pkg.org/badges/version/FoCo2)](https://CRAN.R-project.org/package=FoReco)
+status](https://www.r-pkg.org/badges/version/FoCo2)](https://CRAN.R-project.org/package=FoCo2)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![devel
-version](https://img.shields.io/badge/devel%20version-0.1.0.001-blue.svg)](https://github.com/daniGiro/FoReco)
+version](https://img.shields.io/badge/devel%20version-0.1.0.001-blue.svg)](https://github.com/daniGiro/FoCo2)
 [![License:
 GPL-3](https://img.shields.io/badge/license-GPL--3-forestgreen.svg)](https://cran.r-project.org/web/licenses/GPL-3)
 <!-- badges: end -->
