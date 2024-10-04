@@ -4,8 +4,25 @@
 \name{FoCo2-package}
 \alias{FoCo2}
 \alias{FoCo2-package}
-\title{FoCo2: What the Package Does (Title Case)}
+\title{FoCo2: Coherent forecast combination for linearly constrained multiple time series}
 \description{
-More about what it does (maybe more than one line) Use four spaces when indenting paragraphs within the Description.
+Methods and tools designed to improve the accuracy and coherence of forecasts across multiple linearly constrained time series using multi-task forecast ombination and reconciliation, ensuring that the resulting forecasts satisfy specified linear constraints while leveraging input from multiple forecasting models or experts.
 }
-\keyword{internal}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/danigiro/FoCo2 https://danigiro.github.io/FoCo2}
+  \item Report bugs at \url{https://github.com/danigiro/FoCo2/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Daniele Girolimetto \email{daniele.girolimetto@unipd.it} (\href{https://orcid.org/0000-0001-9387-1232}{ORCID}) [funder]
+
+Authors:
+\itemize{
+  \item Tommaso Di Fonzo (\href{https://orcid.org/0000-0003-3388-7827}{ORCID}) [funder]
+}
+
+}
+\keyword{package}

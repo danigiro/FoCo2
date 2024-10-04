@@ -9,16 +9,17 @@
   }
 }
 
-.weights <- function(y = NULL, fc = "sa", res = NULL, mse = TRUE, shrink = TRUE, ...){
+.weights <- function(y = NULL, fc = "sa", res = NULL, mse = TRUE, shrink = TRUE,
+                     factorized = FALSE, wnn = FALSE, ...){
   if(fc == "sa"){
     tmp <- simplify2array(y)
     w <- apply(tmp, 2, wfoco_sa)
-  }else if(fc == "bg"){
+  }else if(fc %in% c("bg", "var")){
     tmp <- simplify2array(res)
-    w <- apply(tmp, 2, wfoco_bg, mse = mse)
-  }else if(fc %in% c("nb", "ng")){
+    w <- apply(tmp, 2, wfoco_var, mse = mse)
+  }else if(fc %in% c("nb", "ng", "cov")){
     tmp <- simplify2array(res)
-    w <- apply(tmp, 2, wfoco_nb, mse = mse, shrink = shrink)
+    w <- apply(tmp, 2, wfoco_cov, mse = mse, shrink = shrink, nn = wnn)
   }else{
     w <- extract_omega(fc = fc, p = length(y), n = NCOL(y[[1]]), res = res, ...)
     #cli::cli_abort("Not available fc.")
@@ -32,33 +33,43 @@ wfoco_sa <- function(fc){
   xna*(1/sum(xna))
 }
 
-wfoco_bg <- function(res, mse = TRUE){
+wfoco_var <- function(res, mse = TRUE){
   res <- na.omit(res)
   w <- apply(res, 2, function(x) ifelse(mse, sum(x^2)/length(x), var(x)))
   w <- w^(-1)
   w/sum(w)
 }
 
-wfoco_nb <- function(res, mse = TRUE, shrink = TRUE){
+wfoco_cov <- function(res, mse = TRUE, shrink = TRUE, nn = FALSE, factorized = FALSE){
   if(shrink){
     cov_mat <- FoReco::shrink_estim(res, mse = mse)
   }else{
-    cov_mat <- FoReco:::sample_estim(res, mse = mse)
+    cov_mat <- sample_estim(res, mse = mse)
+  }
+  p <- NCOL(cov_mat)
+  w <- lin_sys(cov_mat, rep(1, p))
+
+  if(nn & any(w<0)){
+    w <-  tryCatch({
+      wqp_sys(Dmat = cov_mat, p = p,
+              factorized = factorized, nearPD = FALSE, scale = FALSE)
+    }, error = function(cond){ # e.g. err: cov_mat is not positive definite!
+      tryCatch({
+        wqp_sys(Dmat = cov_mat, p = p,
+                factorized = factorized, nearPD = TRUE, scale = FALSE)
+      }, error = function(cond){ # e.g. err: constraints are inconsistent, no solution!
+        wqp_sys(Dmat = cov_mat, p = p,
+                factorized = factorized, nearPD = TRUE, scale = TRUE)
+      })
+    })
+    w[w<0] <- 0
   }
 
-  w <- lin_sys(cov_mat, rep(1, NCOL(cov_mat)))
   w/sum(w)
 }
 
 extract_omega <- function(fc = "ols", res = NULL, p = NULL, n = NULL, agg_mat = NULL, comb = NULL, ...){
-  fc <- strsplit(fc, "-")[[1]]
-  if(length(fc) == 1){
-    block_diag <- "none"
-    comb <- fc
-  }else{
-    block_diag <- fc[1]
-    comb <- fc[2]
-  }
+  comb <- fc
 
   if(!is.null(agg_mat)){
     tmp <- cstools(agg_mat = agg_mat)
@@ -77,28 +88,21 @@ extract_omega <- function(fc = "ols", res = NULL, p = NULL, n = NULL, agg_mat = 
     }
   }
 
+  ina <- matrix(FALSE, n, p)
+
   # Compute covariance
-  if(block_diag %in% c("fr", "fc")){
-    if(block_diag == "fc" && !is.null(res)){
-      res <- simplify2array(res)
-      res <- lapply(1:(dim(res)[2]), function(i) res[,i,])
-    }
-    cov_mat <- lapply(1:length(res), function(id){
-      cscov(comb = comb, n = n, agg_mat = agg_mat,
-            res = res[[id]], ...)
-    })
-    cov_mat <- bdiag(cov_mat)
-    if(block_diag == "fc" && !is.null(res)){
-      P <- commat(n, p)
-      cov_mat <- t(P)%*%cov_mat%*%P
-    }
-  }else{
-    if(!is.null(res)){
-      res <- do.call(cbind, res)
-    }
-    cov_mat <- cscov(comb = comb, n = n*p,
-                     agg_mat = rbind(do.call(rbind, rep(list(strc_mat), p-1)), agg_mat),
-                     res = res, ...)
+  if(comb %in% c("wls", "shr", "sam")){
+    res <- do.call(cbind, res)
+    res <- res[, !as.vector(ina), drop = FALSE]
+  }
+
+  cov_mat <- cscov(comb = comb, n = n, matNA = ina, p = p, nv = n,
+                   agg_mat = rbind(do.call(rbind, rep(list(strc_mat), p-1)), agg_mat),
+                   res = res, ...)
+
+  if(NROW(cov_mat) != sum(!ina) | NCOL(cov_mat) != sum(!ina)){
+    cli_abort(c("Incorrect covariance dimensions.",
+                "i"="Check {.arg res} dimensions."), call = NULL)
   }
 
   k_mat <- Matrix::kronecker(rep(1, p), .sparseDiagonal(n))

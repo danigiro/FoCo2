@@ -1,0 +1,50 @@
+url: https://danigiro.github.io/FoCo2
+
+development:
+  mode: auto
+  version_label: default
+  version_tooltip: "Version"
+
+template:
+  bootstrap: 5
+
+navbar:
+  structure:
+    left: [home, reference, articles, news]
+    right:  [github, rpro]
+  components:
+    github:
+      icon: fab fa-github fa-lg
+      href: https://github.com/danigiro/FoCo2
+    reference:
+      text: "Reference"
+      icon: fa-book
+      href: reference/index.html
+    news:
+      text: "News"
+      icon: far fa-newspaper
+      href: news/index.html
+    home:
+      text: "Home"
+      icon: fa-home
+      href: index.html
+    rpro:
+      icon: fab fa-r-project fa-lg
+      href: https://cran.r-project.org/web/packages/FoCo2/index.html
+
+reference:
+  - title: Optimal coherent forecast combination
+    contents:
+      - csocc
+  - title: Sequential coherent forecast combination
+    contents:
+      - csscr
+      - cssrc
+  - title: Utilities
+    contents:
+      - cscov
+      - occmat
+      - occbase
+  - title: Package
+    contents:
+      - FoCo2-package

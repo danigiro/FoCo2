@@ -4,27 +4,89 @@
 \alias{csscr}
 \title{Cross-sectional sequential combination-reconciliation}
 \usage{
-csscr(base, res = NULL, fc = "sa", mse = TRUE, shrink = TRUE, ...)
+csscr(base, fc = "sa", res = NULL, mse = TRUE, shrink = TRUE, wnn = FALSE,
+      factorized = FALSE, ...)
 }
 \arguments{
-\item{base}{A list of \eqn{p} (\eqn{h \times n}) numeric matrix or multivariate time series
+\item{base}{A list of \eqn{p} numeric (\eqn{h \times n}) matrix or multivariate time series
 (\code{mts} class) containing the base forecasts to be reconciled; \eqn{h} is the forecast
-horizon, and \eqn{n} is the total number of time series (\eqn{n = n_a + n_b}).}
+horizon, \eqn{n} is the total number of time series (\eqn{n = n_u + n_b}) and
+\eqn{p} is the total number of experts.}
 
-\item{res}{A list of \eqn{p} (\eqn{N \times n}) optional numeric matrix containing the
-in-sample residuals. This matrix is used to compute some covariance matrices.}
+\item{fc}{A string specifying the combination method:
+\itemize{
+\item "\code{sa}" - (\emph{default}) simple average.
+\item "\code{var}" - (uses \code{res}) weights derived from the inverse
+of forecasts variances as proposed by Bates and Granger (1969).
+\item "\code{cov}" - (uses \code{res}) weights derived from the inverse
+of forecast covariance matrix as proposed by Newbold and Granger (1974).
+}}
 
-\item{fc}{A string specifying the combination method}
+\item{res}{A list of \eqn{p} numeric (\eqn{N \times n}) matrix containing the
+in-sample residuals. This input is used to compute some covariance matrices.}
 
-\item{mse}{todo}
+\item{mse}{If \code{TRUE} (\emph{default}) the residuals used to compute the covariance
+matrix are not mean-corrected.}
 
-\item{shrink}{todo}
+\item{shrink}{If \code{TRUE} (\emph{default}), the covariance matrix
+for \code{fc = "cov"} is shrunk.}
 
-\item{...}{Arguments passed on to \code{csrec} (\pkg{FoReco}).}
+\item{wnn}{If \code{TRUE}, the weights are constrained to be non-negative.
+The \emph{default} is \code{FALSE}.}
+
+\item{factorized}{Value to be passed to the \code{\link[quadprog:solve.QP]{quadprog::solve.QP}},
+only when \code{wnn = TRUE}.}
+
+\item{...}{Arguments passed on to
+\href{https://danigiro.github.io/FoReco/reference/csrec.html}{\code{FoReco::csrec}}.}
 }
 \value{
-A (\eqn{h \times n}) numeric matrix of cross-sectional reconciled forecasts.
+A (\eqn{h \times n}) numeric matrix of cross-sectional combined and reconciled forecasts.
 }
 \description{
-Cross-sectional sequential combination-reconciliation
+This function computes a two-step process designed to first combine
+forecasts from multiple models or experts and then apply reconciliation
+techniques to ensure coherence.
 }
+\examples{
+set.seed(123)
+# (2 x 3) base forecasts matrix (simulated), expert 1
+base1 <- matrix(rnorm(6, mean = c(20, 10, 10)), 2, byrow = TRUE)
+# (10 x 3) in-sample residuals matrix (simulated), expert 1
+res1 <- t(matrix(rnorm(n = 30), nrow = 3))
+
+# (2 x 3) base forecasts matrix (simulated), expert 2
+base2 <- matrix(rnorm(6, mean = c(20, 10, 10)), 2, byrow = TRUE)
+# (10 x 3) in-sample residuals matrix (simulated), expert 2
+res2 <- t(matrix(rnorm(n = 30), nrow = 3))
+
+# Base forecasts' and residuals' lists
+base <- list(base1, base2)
+res <- list(res1, res2)
+
+# Aggregation matrix for Z = X + Y
+A <- t(c(1,1))
+reco <- csscr(base = base, agg_mat = A, comb = "wls", res = res, fc = "sa")
+
+# Zero constraints matrix for Z - X - Y = 0
+C <- t(c(1, -1, -1))
+reco <- csscr(base = base, cons_mat = C, comb = "wls", res = res, fc = "sa") # same results
+
+}
+\references{
+Bates, J. and Granger, C. W. (1969), The combination of forecasts,
+\emph{Operations Research Quarterly}, 20, 451–468. \doi{10.1057/jors.1969.103}.
+
+Newbold, P. and Granger, C. W. (1974), Experience with forecasting
+univariate time series and the combination of forecasts,
+\emph{Journal of the Royal Statistical Society, A}, 137, 131–146.
+\doi{10.2307/2344546}
+
+Girolimetto, D. and Di Fonzo, T. (2024), Coherent forecast combination for linearly
+constrained multiple time series, \emph{mimeo}.
+}
+\seealso{
+Sequential coherent combination: 
+\code{\link{cssrc}()}
+}
+\concept{Sequential coherent combination}

@@ -1,14 +1,34 @@
-#' Projection matrix
+#' Matrices for the optimal coherent forecast combination
 #'
+#' This function computes the matrices required for the optimal coherent
+#' forecast combination [csocc], as described in Girolimetto and Di Fonzo (2024).
+#' These matrices serve as the foundation for building forecasts that effectively
+#' combines the individual information from multiple experts while ensuring
+#' coherence across the variables.
+#'
+#' @usage occmat(agg_mat, cons_mat, p = NULL, matNA = NULL,
+#'        comb = "ols", res = NULL, approach = "proj", ...)
+#'
+#' @inheritParams cscov
 #' @inheritParams csocc
 #'
-#' @return A list
+#' @return A list of matrices:
+#' \item{M}{The projection matrix.}
+#' \item{Omega}{The matrix formed by the combination weights of the multi-task forecast combination.}
+#' \item{W}{The forecast error covariance matrix of the base forecasts.}
+#' \item{Wc}{The forecast error covariance matrix of the combined forecasts.}
+#' \item{Wtilde}{The forecast error covariance matrix of the reconciled combined forecasts.}
+#' \item{K}{The matrix that replicates a vector.}
+#'
+#' @references
+#' Girolimetto, D. and Di Fonzo, T. (2024), Coherent forecast combination for linearly
+#' constrained multiple time series, \emph{mimeo}.
+#'
+#' @family Optimal coherent combination
+#'
 #' @export
-csprojmat <- function(agg_mat, cons_mat, block_diag = "fr", p = NULL,
-                      comb = "ols", res = NULL, approach = "proj",
-                      ...){
-
-  block_diag <- match.arg(block_diag, c("fr", "fc", "none"))
+occmat <- function(agg_mat, cons_mat, p = NULL, matNA = NULL,
+                   comb = "ols", res = NULL, approach = "proj", ...){
 
   # Check if either 'agg_mat' or 'cons_mat' is specified
   if(missing(agg_mat) && missing(cons_mat)){
@@ -30,33 +50,39 @@ csprojmat <- function(agg_mat, cons_mat, block_diag = "fr", p = NULL,
     }else{
       p <- length(res)
     }
+  }else{
+    if(!is.null(res) && p != length(res)){
+      cli_abort("Argument {.arg p} is not equal to the length of {.arg res}.",
+                call = NULL)
+    }
+  }
+
+  if(!is.null(matNA)){
+    ina <- is.na(matNA) | matNA==0
+  }else{
+    ina <- matrix(FALSE, p, n)
   }
 
   # Compute covariance
-  if(block_diag %in% c("fr", "fc")){
-    if(block_diag == "fc" && !is.null(res)){
-      res <- simplify2array(res)
-      res <- lapply(1:(dim(res)[2]), function(i) res[,i,])
-    }
-    cov_mat <- lapply(1:length(res), function(id){
-      cscov(comb = comb, n = n, agg_mat = agg_mat,
-            res = res[[id]], ...)
-    })
-    cov_mat <- bdiag(cov_mat)
-    if(block_diag == "fc" && !is.null(res)){
-      P <- commat(n, p)
-      cov_mat <- t(P)%*%cov_mat%*%P
-    }
-  }else{
-    if(!is.null(res)){
-      res <- do.call(cbind, res)
-    }
-    cov_mat <- cscov(comb = comb, n = n*p,
-                     agg_mat = rbind(do.call(rbind, rep(list(strc_mat), p-1)), agg_mat),
-                     res = res, ...)
+  if(!is.null(res)){
+    res <- do.call(cbind, res)
+    res <- res[, !as.vector(ina), drop = FALSE]
   }
 
-  k_mat <- Matrix::kronecker(rep(1, p), .sparseDiagonal(NCOL(cons_mat)))
+  cov_mat <- cscov(comb = comb, n = n*p, matNA = ina, p = p, nv = n,
+                   agg_mat = rbind(do.call(rbind, rep(list(strc_mat), p-1)), agg_mat),
+                   res = res, ...)
+
+  if(NROW(cov_mat) != sum(!ina) | NCOL(cov_mat) != sum(!ina)){
+    if(any(as.vector(ina))){
+      cov_mat <- cov_mat[!as.vector(ina), , drop = FALSE][, !as.vector(ina), drop = FALSE]
+    }else{
+      cli_abort(c("Incorrect covariance dimensions.",
+                  "i"="Check {.arg res} dimensions."), call = NULL)
+    }
+  }
+
+  k_mat <- Matrix::kronecker(rep(1, p), .sparseDiagonal(NCOL(cons_mat)))[!as.vector(ina), , drop = FALSE]
 
   if(isDiagonal(cov_mat)){
     cov_k <- lin_sys(cov_mat, k_mat)
@@ -76,5 +102,8 @@ csprojmat <- function(agg_mat, cons_mat, block_diag = "fr", p = NULL,
     M <- Diagonal(n) - cov_c%*%ls1
   }
 
-  return(list(M = M, Omega = Omega, W = cov_mat, Wc = solve(k_cov_k)))
+  Wc <- solve(k_cov_k)
+
+  return(list(M = M, Omega = Omega, W = cov_mat,
+              Wc = Wc, K = k_mat, Wtilde = M%*%Wc))
 }

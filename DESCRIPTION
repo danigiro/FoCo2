@@ -1,21 +1,32 @@
 Package: FoCo2
 Type: Package
-Title: Forecast Coherent Combination
-Version: 0.1.0.001
+Title: Coherent forecast combination for linearly constrained multiple time series
+Version: 0.1.0.006
 Authors@R: 
     c(person(given = "Daniele",
              family = "Girolimetto",
              role = c("aut", "cre", "fnd"),
              email = "daniele.girolimetto@unipd.it",
-             comment = c(ORCID = "0000-0001-9387-1232")))
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+             comment = c(ORCID = "0000-0001-9387-1232")),
+      person(given = "Tommaso",
+             family = "Di Fonzo",
+             role = c("aut", "fnd"),
+             comment = c(ORCID = "0000-0003-3388-7827")))
+Description: Methods and tools designed to improve the accuracy and coherence of 
+    forecasts across multiple linearly constrained time series using multi-task 
+    forecast ombination and reconciliation, ensuring that the resulting forecasts 
+    satisfy specified linear constraints while leveraging input from multiple 
+    forecasting models or experts.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Depends: R (>= 3.4), Matrix, FoReco
-Imports: stats, cli, methods
+Imports: stats, cli, methods, quadprog, osqp
 RoxygenNote: 7.3.1
 Roxygen: list(markdown = TRUE)
 URL: https://github.com/danigiro/FoCo2
+    https://danigiro.github.io/FoCo2
 BugReports: https://github.com/danigiro/FoCo2/issues
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

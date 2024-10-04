@@ -1,13 +1,65 @@
-#' Base forecast component
+#' Base forecast component of the optimal coherent forecast combination
+#'
+#' This function computes the base forecast component of the optimal coherent
+#' forecast combination [csocc], as described in Girolimetto and Di Fonzo (2024)
+#'
+#' @usage occbase(base, agg_mat = NULL, comb = "ols", res = NULL, ...)
 #'
 #' @inheritParams csocc
 #'
 #' @returns A (\eqn{h \times n}) numeric matrix of cross-sectional combined forecasts.
+#'
+#' @references
+#' Girolimetto, D. and Di Fonzo, T. (2024), Coherent forecast combination for linearly
+#' constrained multiple time series, \emph{mimeo}.
+#'
+#' @family Optimal coherent combination
+#'
+#' @examples
+#' set.seed(123)
+#' # (2 x 3) base forecasts matrix (simulated), expert 1
+#' base1 <- matrix(rnorm(6, mean = c(20, 10, 10)), 2, byrow = TRUE)
+#' # (10 x 3) in-sample residuals matrix (simulated), expert 1
+#' res1 <- t(matrix(rnorm(n = 30), nrow = 3))
+#'
+#' # (2 x 3) base forecasts matrix (simulated), expert 2
+#' base2 <- matrix(rnorm(6, mean = c(20, 10, 10)), 2, byrow = TRUE)
+#' # (10 x 3) in-sample residuals matrix (simulated), expert 2
+#' res2 <- t(matrix(rnorm(n = 30), nrow = 3))
+#'
+#' ## RECTANGULAR CASE
+#' # Base forecasts' and residuals' lists
+#' brc <- list(base1, base2)
+#' erc <- list(res1, res2)
+#'
+#' # Aggregation matrix for Z = X + Y
+#' A <- t(c(1,1))
+#' rrc <- csocc(base = brc, agg_mat = A, comb = "shr", res = erc)
+#'
+#' yc <- occbase(base = brc, agg_mat = A, comb = "shr", res = erc)
+#' M <- occmat(base = brc, agg_mat = A, comb = "shr", p = 2, res = erc)$M
+#' M%*%t(yc)-t(rrc)
+#'
+#' ## NON-RECTANGULAR CASE
+#' base2[, 2] <- res2[, 2] <-  NA
+#'
+#' # Base forecasts' and residuals' lists
+#' bgc <- list(base1, base2)
+#' egc <- list(res1, res2)
+#' matNA <- matrix(1, 3, 2)
+#' matNA[2,2] <- 0
+#'
+#' # Aggregation matrix for Z = X + Y
+#' A <- t(c(1,1))
+#' rgc <- csocc(base = bgc, agg_mat = A, comb = "shr", res = egc)
+#'
+#' yc <- occbase(base = bgc, agg_mat = A, comb = "shr", res = egc)
+#' M <- occmat(base = bgc, agg_mat = A, comb = "shr", p = 2, res = egc, matNA = matNA)$M
+#' M%*%t(yc)-t(rgc)
+#'
 #' @export
-csbase <- function(base, agg_mat = NULL, block_diag = "fr", p = NULL,
-                   comb = "ols", res = NULL, ...){
-
-  block_diag <- match.arg(block_diag, c("fr", "fc", "none"))
+occbase <- function(base, agg_mat = NULL,
+                    comb = "ols", res = NULL, ...){
 
   # Check if 'base' is provided and its dimensions match with the data
   if(missing(base)){
@@ -24,36 +76,37 @@ csbase <- function(base, agg_mat = NULL, block_diag = "fr", p = NULL,
     strc_mat <- tmp$strc_mat
   }
 
+  ina <- sapply(base, function(bmat){
+    is.na(colSums(bmat))
+  })
+  base <- lapply(base, rbind)
   base <- do.call(cbind, base)
+
   if(NCOL(base) != n*p){
     cli_abort("Incorrect {.arg base} columns dimension.", call = NULL)
   }
+  base <- base[, !as.vector(ina), drop = FALSE]
 
   # Compute covariance
-  if(block_diag %in% c("fr", "fc")){
-    if(block_diag == "fc" && !is.null(res)){
-      res <- simplify2array(res)
-      res <- lapply(1:(dim(res)[2]), function(i) res[,i,])
-    }
-    cov_mat <- lapply(1:length(res), function(id){
-      cscov(comb = comb, n = n, agg_mat = agg_mat,
-            res = res[[id]], ...)
-    })
-    cov_mat <- bdiag(cov_mat)
-    if(block_diag == "fc" && !is.null(res)){
-      P <- commat(n, p)
-      cov_mat <- t(P)%*%cov_mat%*%P
-    }
-  }else{
-    if(!is.null(res)){
-      res <- do.call(cbind, res)
-    }
-    cov_mat <- cscov(comb = comb, n = n*p,
-                     agg_mat = rbind(do.call(rbind, rep(list(strc_mat), p-1)), agg_mat),
-                     res = res, ...)
+  if(!is.null(res)){
+    res <- do.call(cbind, res)
+    res <- res[, !as.vector(ina), drop = FALSE]
   }
 
-  k_mat <- Matrix::kronecker(rep(1, p), .sparseDiagonal(n))
+  cov_mat <- cscov(comb = comb, n = NCOL(base), matNA = ina, p = p, nv = n,
+                   agg_mat = rbind(do.call(rbind, rep(list(strc_mat), p-1)), agg_mat),
+                   res = res, ...)
+
+  if(NROW(cov_mat) != NCOL(base) | NCOL(cov_mat) != NCOL(base)){
+    if(any(as.vector(ina))){
+      cov_mat <- cov_mat[!as.vector(ina), !as.vector(ina), drop = FALSE]
+    }else{
+      cli_abort(c("Incorrect covariance dimensions.",
+                  "i"="Check {.arg res} dimensions."), call = NULL)
+    }
+  }
+
+  k_mat <- Matrix::kronecker(rep(1, p), .sparseDiagonal(n))[!as.vector(ina), , drop = FALSE]
 
   if(isDiagonal(cov_mat)){
     cov_inv <- Matrix::.sparseDiagonal(x = Matrix::diag(cov_mat)^(-1))
