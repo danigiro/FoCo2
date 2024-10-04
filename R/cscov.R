@@ -73,7 +73,6 @@ cscov.shrbe <- function(comb = "shrbe", ..., nv = NULL, p = NULL, matNA = NULL,
   if(!is.null(matNA)){
     if(is.logical(matNA)){
       ina <- as.vector(t(matNA))
-      print(dim(matNA))
     }else{
       ina <- t(is.na(matNA) | matNA==0)
     }
