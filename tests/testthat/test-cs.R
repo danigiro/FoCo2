@@ -8,10 +8,12 @@ if(require(testthat)){
   base1 <- t(rnorm(sum(dim(A)), 1))
   res2 <- matrix(rnorm(100*sum(dim(A))), 100, sum(dim(A)))
   base2 <- t(rnorm(sum(dim(A)), 1))
+  res3 <- matrix(rnorm(100*sum(dim(A))), 100, sum(dim(A)))
+  base3 <- t(rnorm(sum(dim(A)), 1))
   C <- cbind(diag(NROW(A)), -A)
   comb <- "shr"
-  base <- list(base1, base2)
-  res <- list(res1, res2)
+  base <- list(base1, base2, base3)
+  res <- list(res1, res2, res3)
   test_that("Optimal cross-sectional coherent combination", {
     r1 <- csocc(base = base, agg_mat = A, comb = comb,
                 res = res, approach = "strc")
