@@ -87,12 +87,50 @@ if(require(testthat)){
   })
 
   test_that("Covariance check with NA", {
-    for(i in c("ols", "str", "wls", "shr", "shrbe", "shrbv", "sam", "sambe", "sambv")){
-      expect_no_error({
-        csocc(base = base, agg_mat = A, comb = i,
-              res = res, approach = "proj")
-      })
-    }
+    expect_no_error({
+      csocc(base = base, agg_mat = A, comb = "ols",
+            res = res, approach = "proj")
+    })
+
+    expect_no_error({
+      csocc(base = base, agg_mat = A, comb = "str",
+            res = res, approach = "proj")
+    })
+
+    expect_no_error({
+      csocc(base = base, agg_mat = A, comb = "wls",
+            res = res, approach = "proj")
+    })
+
+    expect_no_error({
+      csocc(base = base, agg_mat = A, comb = "shr",
+            res = res, approach = "proj")
+    })
+
+    expect_no_error({
+      csocc(base = base, agg_mat = A, comb = "sam",
+            res = res, approach = "proj")
+    })
+
+    expect_no_error({
+      csocc(base = base, agg_mat = A, comb = "shrbe",
+            res = res, approach = "proj")
+    })
+
+    expect_no_error({
+      csocc(base = base, agg_mat = A, comb = "shrbv",
+            res = res, approach = "proj")
+    })
+
+    expect_no_error({
+      csocc(base = base, agg_mat = A, comb = "sambe",
+            res = res, approach = "proj")
+    })
+
+    expect_no_error({
+      csocc(base = base, agg_mat = A, comb = "sambe",
+            res = res, approach = "proj")
+    })
   })
 
 }
