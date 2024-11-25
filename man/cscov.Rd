@@ -9,13 +9,13 @@
 \title{Cross-sectional covariance matrix approximation}
 \usage{
 \method{cscov}{shrbe}(comb = "shrbe", ..., n = NULL, p = NULL, matNA = NULL,
-      res = NULL, mse = TRUE, shrink_fun = shrink_estim)
+      res = NULL, mse = TRUE, shrink_fun = NULL)
 
 \method{cscov}{sambe}(comb = "sambe", ..., n = NULL, p = NULL, matNA = NULL,
       res = NULL, mse = TRUE)
 
 \method{cscov}{shrbv}(comb = "shrbv", ..., n = NULL, p = NULL, matNA = NULL,
-      res = NULL, mse = TRUE, shrink_fun = shrink_estim)
+      res = NULL, mse = TRUE, shrink_fun = NULL)
 
 \method{cscov}{sambv}(comb = "sambv", ..., n = NULL, p = NULL, matNA = NULL,
       res = NULL, mse = TRUE)

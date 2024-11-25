@@ -9,7 +9,7 @@
 #'
 #' @usage
 #' \method{cscov}{shrbe}(comb = "shrbe", ..., n = NULL, p = NULL, matNA = NULL,
-#'       res = NULL, mse = TRUE, shrink_fun = shrink_estim)
+#'       res = NULL, mse = TRUE, shrink_fun = NULL)
 #'
 #' @inheritParams csocc
 #' @param p Total number of experts, \eqn{p}.
@@ -150,7 +150,7 @@ cscov.sambe <- function(comb = "sambe", ..., n = NULL, p = NULL, matNA = NULL,
 
 #' @usage
 #' \method{cscov}{shrbv}(comb = "shrbv", ..., n = NULL, p = NULL, matNA = NULL,
-#'       res = NULL, mse = TRUE, shrink_fun = shrink_estim)
+#'       res = NULL, mse = TRUE, shrink_fun = NULL)
 #' @rdname cscov
 #' @exportS3Method FoReco::cscov
 cscov.shrbv <- function(comb = "shrbv", ..., n = NULL, p = NULL, matNA = NULL,
