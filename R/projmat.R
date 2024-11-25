@@ -9,22 +9,22 @@
 #' @usage occmat(agg_mat, cons_mat, p = NULL, matNA = NULL,
 #'        comb = "ols", res = NULL, approach = "proj", ...)
 #'
-#' @inheritParams cscov
 #' @inheritParams csocc
+#' @inheritParams cscov
 #'
 #' @return A list of matrices:
-#' \item{M}{The projection matrix.}
-#' \item{Omega}{The matrix formed by the combination weights of the multi-task forecast combination.}
-#' \item{W}{The forecast error covariance matrix of the base forecasts.}
-#' \item{Wc}{The forecast error covariance matrix of the combined forecasts.}
-#' \item{Wtilde}{The forecast error covariance matrix of the reconciled combined forecasts.}
-#' \item{K}{The matrix that replicates a vector.}
+#' \item{M}{Projection matrix.}
+#' \item{Omega}{Matrix of the combination weights of the optimal linear multi-task forecast combination.}
+#' \item{W}{Forecast error covariance matrix of the base forecasts.}
+#' \item{Wc}{Forecast error covariance matrix of the combined forecasts.}
+#' \item{Wtilde}{Forecast error covariance matrix of the reconciled combined forecasts.}
+#' \item{K}{Matrix that replicates a vector (see Girolimetto and Di Fonzo, 2024).}
 #'
 #' @references
 #' Girolimetto, D. and Di Fonzo, T. (2024), Coherent forecast combination for linearly
 #' constrained multiple time series, \emph{mimeo}.
 #'
-#' @family Optimal coherent combination
+#' @family Optimal combination
 #'
 #' @export
 occmat <- function(agg_mat, cons_mat, p = NULL, matNA = NULL,
@@ -69,12 +69,16 @@ occmat <- function(agg_mat, cons_mat, p = NULL, matNA = NULL,
     res <- res[, !as.vector(ina), drop = FALSE]
   }
 
-  cov_mat <- cscov(comb = comb, n = n*p, matNA = ina, p = p, nv = n,
+  cov_mat <- cscov(comb = comb,  n = ifelse(comb == "ols", n*p, n), matNA = ina, p = p,
                    agg_mat = rbind(do.call(rbind, rep(list(strc_mat), p-1)), agg_mat),
                    res = res, ...)
 
   if(NROW(cov_mat) != sum(!ina) | NCOL(cov_mat) != sum(!ina)){
     if(any(as.vector(ina))){
+      if(NROW(cov_mat) != length(ina)){
+        cli_abort(c("Incorrect covariance dimensions.",
+                    "i"="Check {.arg res} dimensions."), call = NULL)
+      }
       cov_mat <- cov_mat[!as.vector(ina), , drop = FALSE][, !as.vector(ina), drop = FALSE]
     }else{
       cli_abort(c("Incorrect covariance dimensions.",

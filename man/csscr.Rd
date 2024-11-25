@@ -4,8 +4,8 @@
 \alias{csscr}
 \title{Cross-sectional sequential combination-reconciliation}
 \usage{
-csscr(base, fc = "sa", res = NULL, mse = TRUE, shrink = TRUE, wnn = FALSE,
-      factorized = FALSE, ...)
+csscr(base, fc = "sa", comb = "ols", res = NULL, mse = TRUE, shrink = TRUE,
+      nnw = FALSE, factorized = FALSE, ...)
 }
 \arguments{
 \item{base}{A list of \eqn{p} numeric (\eqn{h \times n}) matrix or multivariate time series
@@ -15,12 +15,17 @@ horizon, \eqn{n} is the total number of time series (\eqn{n = n_u + n_b}) and
 
 \item{fc}{A string specifying the combination method:
 \itemize{
-\item "\code{sa}" - (\emph{default}) simple average.
+\item "\code{sa}" - (\emph{default}) simple average (equal weights).
 \item "\code{var}" - (uses \code{res}) weights derived from the inverse
-of forecasts variances as proposed by Bates and Granger (1969).
-\item "\code{cov}" - (uses \code{res}) weights derived from the inverse
-of forecast covariance matrix as proposed by Newbold and Granger (1974).
+of forecasts variances/MSE as proposed by Bates and Granger (1969).
+\item "\code{cov}" - (uses \code{res}) weights derived using the whole
+forecast error covariance matrix, as proposed by Newbold and Granger (1974).
 }}
+
+\item{comb}{A string specifying the reconciliation method: \code{"ols"}, \code{"wls"},
+\code{"shr"}, \code{"sam"} (see \href{https://danigiro.github.io/FoReco/}{\code{FoReco}}).
+If \code{comb = "none"}, no reconciliation is performed and the combined forecasts are
+directly returned.}
 
 \item{res}{A list of \eqn{p} numeric (\eqn{N \times n}) matrix containing the
 in-sample residuals. This input is used to compute some covariance matrices.}
@@ -31,20 +36,21 @@ matrix are not mean-corrected.}
 \item{shrink}{If \code{TRUE} (\emph{default}), the covariance matrix
 for \code{fc = "cov"} is shrunk.}
 
-\item{wnn}{If \code{TRUE}, the weights are constrained to be non-negative.
-The \emph{default} is \code{FALSE}.}
+\item{nnw}{If \code{TRUE} for \code{fc = "cov"}, the weights are constrained to be
+non-negative (Conflitti et al., 2015). The \emph{default} is \code{FALSE}.}
 
 \item{factorized}{Value to be passed to the \code{\link[quadprog:solve.QP]{quadprog::solve.QP}},
-only when \code{wnn = TRUE}.}
+only when \code{nnw = TRUE}.}
 
 \item{...}{Arguments passed on to
-\href{https://danigiro.github.io/FoReco/reference/csrec.html}{\code{FoReco::csrec}}.}
+\href{https://danigiro.github.io/FoReco/reference/csrec.html}{\code{FoReco::csrec}}
+(e.g., \code{agg_mat} or \code{cons_mat}).}
 }
 \value{
 A (\eqn{h \times n}) numeric matrix of cross-sectional combined and reconciled forecasts.
 }
 \description{
-This function computes a two-step process designed to first combine
+This function performs a two-step process designed to first combine
 forecasts from multiple models or experts and then apply reconciliation
 techniques to ensure coherence.
 }
@@ -72,18 +78,25 @@ reco <- csscr(base = base, agg_mat = A, comb = "wls", res = res, fc = "sa")
 C <- t(c(1, -1, -1))
 reco <- csscr(base = base, cons_mat = C, comb = "wls", res = res, fc = "sa") # same results
 
+# Incoherent combined forecasts
+fc_comb <- csscr(base = base, comb = "none", fc = "sa")
+round(C \%*\% t(fc_comb), 3) # Incoherent forecasts
 }
 \references{
 Bates, J. and Granger, C. W. (1969), The combination of forecasts,
 \emph{Operations Research Quarterly}, 20, 451–468. \doi{10.1057/jors.1969.103}.
 
+Conflitti, C., De Mol, C., and Giannone, D. (2015), Optimal combination of survey
+forecasts. \emph{International Journal of Forecasting}, 31(4), 1096–1103.
+\doi{10.1016/j.ijforecast.2015.03.009}.
+
+Girolimetto, D. and Di Fonzo, T. (2024), Coherent forecast combination for linearly
+constrained multiple time series, \emph{mimeo}.
+
 Newbold, P. and Granger, C. W. (1974), Experience with forecasting
 univariate time series and the combination of forecasts,
 \emph{Journal of the Royal Statistical Society, A}, 137, 131–146.
 \doi{10.2307/2344546}
-
-Girolimetto, D. and Di Fonzo, T. (2024), Coherent forecast combination for linearly
-constrained multiple time series, \emph{mimeo}.
 }
 \seealso{
 Sequential coherent combination: 

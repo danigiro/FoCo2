@@ -1,11 +1,11 @@
-resemble <- function(approach, base, nn = NULL, ...){
+resemble <- function(approach, base, nn = NULL, bounds = NULL, ...){
   tsp(base) <- NULL # Remove ts
 
   class_base <- approach
 
   # Set class of 'base' to include 'approach' and reconcile
   class(approach) <- c(class(approach), class_base)
-  rmat <- .resemble(approach = approach, base = base, nn = nn, ...)
+  rmat <- .resemble(approach = approach, base = base, nn = nn, bounds = bounds, ...)
 
   # Check if 'nn' is provided and adjust 'rmat' accordingly
   if(!is.null(nn)){
@@ -15,9 +15,40 @@ resemble <- function(approach, base, nn = NULL, ...){
 
     if(!all(rmat >= -sqrt(.Machine$double.eps))){
       class(approach)[length(class(approach))] <- nn
-      rmat <- .resemble(approach = approach, base = base, nn = nn, reco = rmat, ...)
+      rmat <- .resemble(approach = approach, base = base, nn = nn, reco = rmat,
+                        bounds = bounds, ...)
     } else if(!all(rmat >= 0)){
       rmat[rmat < 0] <- 0
+    }
+  }else if(!is.null(bounds)){
+    nbid <- bounds[,1,drop = TRUE]
+
+    checkb <- apply(rmat, 1, function(x){
+      idl <- any(x[nbid]<bounds[,2,drop = TRUE] - sqrt(.Machine$double.eps))
+      idb <- any(x[nbid]>bounds[, 3, drop = TRUE] + sqrt(.Machine$double.eps))
+
+      idl0 <- any(x[nbid]<bounds[,2,drop = TRUE])
+      idb0 <- any(x[nbid]>bounds[, 3, drop = TRUE])
+      c(any(c(idl, idb)), any(c(idl0, idb0)))
+    })
+
+    if(any(checkb[1,])){
+      if(is.null(attr(bounds, "approach")) | attr(bounds, "approach") == "osqp"){
+        attr(bounds, "approach") <- paste(approach, "osqp", sep = "_")
+      }
+
+      class(approach)[length(class(approach))] <- attr(bounds, "approach")
+      rmat <- .resemble(approach = approach, base = base, nn = nn, reco = rmat,
+                        bounds = bounds, ...)
+    }else if(any(checkb[2,])){
+      rmat <- t(apply(rmat, 1, function(x){
+        id <- x[nbid]<=bounds[,2,drop = TRUE]+sqrt(.Machine$double.eps)
+        x[nbid][id] <- bounds[,2,drop = TRUE][id]
+
+        id <- x[nbid]>=bounds[, 3, drop = TRUE]-sqrt(.Machine$double.eps)
+        x[nbid][id] <- bounds[, 3, drop = TRUE][id]
+        x
+      }))
     }
   }
   return(rmat)
@@ -167,10 +198,9 @@ resemble.proj_osqp <- function(base, cons_mat, cov_mat, p, ina,
 
   # other constraints
   if(!is.null(bounds)){
-    bounds_rows <- rowSums(abs(bounds) == Inf) < 2
-    A <- rbind(A, Diagonal(c)[bounds_rows, ])
-    l <- c(l, bounds[bounds_rows, 1, drop = TRUE])
-    u <- c(u, bounds[bounds_rows, 2, drop = TRUE])
+    A <- rbind(A, Diagonal(c)[bounds[,1,drop = TRUE], ])
+    l <- c(l, bounds[,2,drop = TRUE])
+    u <- c(u, bounds[,3,drop = TRUE])
   }
 
   if(is.null(settings)){
@@ -203,6 +233,15 @@ resemble.proj_osqp <- function(base, cons_mat, cov_mat, p, ina,
                  "i"="OSQP pri_res = {rec$info$pri_res}"), call = NULL)
     }
 
+    if(!is.null(bounds)){
+      nbid <- bounds[,1,drop = TRUE]
+      id <- out$reco[nbid]<=bounds[,2,drop = TRUE]+sqrt(.Machine$double.eps)
+      out$reco[nbid][id] <- bounds[,2,drop = TRUE][id]
+
+      id <- out$reco[nbid]>=bounds[, 3, drop = TRUE]-sqrt(.Machine$double.eps)
+      out$reco[nbid][id] <- bounds[, 3, drop = TRUE][id]
+    }
+
     out$info <- c(rec$info$obj_val, rec$info$run_time, rec$info$iter,
                   rec$info$pri_res, rec$info$status_val, rec$info$status_polish)
 
@@ -220,6 +259,7 @@ resemble.proj_osqp <- function(base, cons_mat, cov_mat, p, ina,
   if(!is.null(nn)){
     reco[which(reco <= sqrt(.Machine$double.eps))] <- 0
   }
+
 
   class(reco) <- setdiff(class(reco), "proj_osqp")
 
@@ -324,10 +364,9 @@ resemble.strc_osqp <- function(base, strc_mat, cov_mat, p, ina,
 
   # other constraints
   if(!is.null(bounds)){
-    bounds_rows <- rowSums(abs(bounds) == Inf) < 2
-    A <- rbind(A, strc_mat[bounds_rows, ,drop = FALSE])
-    l <- c(l, bounds[bounds_rows, 1, drop = TRUE])
-    u <- c(u, bounds[bounds_rows, 2, drop = TRUE])
+    A <- rbind(A, strc_mat[bounds[,1,drop = TRUE], ,drop = FALSE])
+    l <- c(l, bounds[,2,drop = TRUE])
+    u <- c(u, bounds[,3,drop = TRUE])
   }
 
   if(is.null(settings)){
@@ -358,6 +397,15 @@ resemble.strc_osqp <- function(base, strc_mat, cov_mat, p, ina,
       cli_warn(c("x"="OSQP failed: check the results.",
                  "i"="OSQP flag = {rec$info$status_val}",
                  "i"="OSQP pri_res = {rec$info$pri_res}"), call = NULL)
+    }
+
+    if(!is.null(bounds)){
+      nbid <- bounds[,1,drop = TRUE]
+      id <- out$reco[nbid]<=bounds[,2,drop = TRUE]+sqrt(.Machine$double.eps)
+      out$reco[nbid][id] <- bounds[,2,drop = TRUE][id]
+
+      id <- out$reco[nbid]>=bounds[, 3, drop = TRUE]-sqrt(.Machine$double.eps)
+      out$reco[nbid][id] <- bounds[, 3, drop = TRUE][id]
     }
 
     out$info <- c(
@@ -429,3 +477,42 @@ resemble.sntz <- function(base, reco, strc_mat, cov_mat, id_nn = NULL, settings 
   as.matrix(bts %*% t(strc_mat))
 }
 
+resemble.sftb <- function(base, reco, strc_mat, id_nn = NULL, bounds = NULL, ...){
+  # Check input
+  if(missing(strc_mat)){
+    cli_abort("Mandatory arguments: {.arg strc_mat} and {.arg cov_mat}.",
+              call = NULL)
+  }
+
+  if(missing(reco)){
+    reco <- base
+  }
+
+  if(is.null(bounds)){
+    return(reco)
+  }
+
+  if(is.null(strc_mat)){
+    cli_abort(c("Argument {.arg agg_mat} is missing. The {.strong sntz} approach
+                is available only for hierarchical/groupped time series."), call = NULL)
+  }
+
+  if(is.null(id_nn)){
+    bts <- find_bts(strc_mat)
+    id_nn <- rep(0, NCOL(reco))
+    id_nn[bts] <- 1
+  }
+
+  nbid <- bounds[,1,drop = TRUE]
+  reco <- t(apply(reco, 1, function(x){
+    id <- x[nbid]<=bounds[,2,drop = TRUE]+sqrt(.Machine$double.eps)
+    x[nbid][id] <- bounds[,2,drop = TRUE][id]
+
+    id <- x[nbid]>=bounds[, 3, drop = TRUE]-sqrt(.Machine$double.eps)
+    x[nbid][id] <- bounds[, 3, drop = TRUE][id]
+    x
+  }))
+
+  bts <- reco[, id_nn == 1, drop = FALSE]
+  as.matrix(bts %*% t(strc_mat))
+}

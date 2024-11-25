@@ -10,7 +10,7 @@
 }
 
 .weights <- function(y = NULL, fc = "sa", res = NULL, mse = TRUE, shrink = TRUE,
-                     factorized = FALSE, wnn = FALSE, ...){
+                     factorized = FALSE, nnw = FALSE, ...){
   if(fc == "sa"){
     tmp <- simplify2array(y)
     w <- apply(tmp, 2, wfoco_sa)
@@ -19,7 +19,7 @@
     w <- apply(tmp, 2, wfoco_var, mse = mse)
   }else if(fc %in% c("nb", "ng", "cov")){
     tmp <- simplify2array(res)
-    w <- apply(tmp, 2, wfoco_cov, mse = mse, shrink = shrink, nn = wnn)
+    w <- apply(tmp, 2, wfoco_cov, mse = mse, shrink = shrink, nn = nnw)
   }else{
     w <- extract_omega(fc = fc, p = length(y), n = NCOL(y[[1]]), res = res, ...)
     #cli::cli_abort("Not available fc.")
@@ -34,13 +34,21 @@ wfoco_sa <- function(fc){
 }
 
 wfoco_var <- function(res, mse = TRUE){
-  res <- na.omit(res)
-  w <- apply(res, 2, function(x) ifelse(mse, sum(x^2)/length(x), var(x)))
+  idna <- colSums(!is.na(res))==0
+  res <- res[, !idna, drop = FALSE]
+  w <- apply(res, 2, function(x) ifelse(mse, sum(x^2, na.rm = TRUE)/sum(!is.na(x)),
+                                        var(x, na.rm = TRUE)))
   w <- w^(-1)
-  w/sum(w)
+
+  w <- w/sum(w)
+  w_out <- rep(0, length(idna))
+  w_out[!idna] <- w
+  w_out
 }
 
 wfoco_cov <- function(res, mse = TRUE, shrink = TRUE, nn = FALSE, factorized = FALSE){
+  idna <- colSums(!is.na(res))==0
+  res <- res[, !idna, drop = FALSE]
   if(shrink){
     cov_mat <- FoReco::shrink_estim(res, mse = mse)
   }else{
@@ -65,7 +73,10 @@ wfoco_cov <- function(res, mse = TRUE, shrink = TRUE, nn = FALSE, factorized = F
     w[w<0] <- 0
   }
 
-  w/sum(w)
+  w <- w/sum(w)
+  w_out <- rep(0, length(idna))
+  w_out[!idna] <- w
+  w_out
 }
 
 extract_omega <- function(fc = "ols", res = NULL, p = NULL, n = NULL, agg_mat = NULL, comb = NULL, ...){
@@ -96,7 +107,7 @@ extract_omega <- function(fc = "ols", res = NULL, p = NULL, n = NULL, agg_mat = 
     res <- res[, !as.vector(ina), drop = FALSE]
   }
 
-  cov_mat <- cscov(comb = comb, n = n, matNA = ina, p = p, nv = n,
+  cov_mat <- cscov(comb = comb, n = ifelse(comb == "ols", n*p, n), matNA = ina, p = p,
                    agg_mat = rbind(do.call(rbind, rep(list(strc_mat), p-1)), agg_mat),
                    res = res, ...)
 

@@ -9,13 +9,15 @@ occmat(agg_mat, cons_mat, p = NULL, matNA = NULL,
 }
 \arguments{
 \item{agg_mat}{A (\eqn{n_u \times n_b}) numeric matrix representing the cross-sectional
-aggregation matrix. It maps the \eqn{n_b} bottom-level (free)
+aggregation matrix, mapping the \eqn{n_b} bottom-level (free)
 variables into the \eqn{n_u} upper (constrained) variables.}
 
 \item{cons_mat}{A (\eqn{n_u \times n}) numeric matrix representing the cross-sectional
-zero constraints. It spans the null space for the reconciled forecasts.}
+zero constraints: each row represents a constraint equation, and each column represents
+a variable. The matrix can be of full rank, meaning the rows are linearly independent,
+but this is not a strict requirement, as the function allows for redundancy in the constraints.}
 
-\item{p}{Total number of experts.}
+\item{p}{Total number of experts, \eqn{p}.}
 
 \item{matNA}{A (\eqn{n \times p}) matrix consisting of 0s and 1s,
 where each element indicates whether expert \eqn{j} (column) has
@@ -23,13 +25,7 @@ provided a forecast for variable \eqn{i} (row). If expert \eqn{j}
 has provided a forecast for variable \eqn{i}, the corresponding
 element \eqn{(i,j)} is 1; otherwise, it is 0.}
 
-\item{comb}{A string specifying the reconciliation method.
-\itemize{
-\item \href{https://danigiro.github.io/FoReco/}{\code{FoReco}} approximations:
-\code{"ols"}, \code{"wls"}, \code{"shr"}, \code{"sam"}.
-\item "\code{shrbe}"/"\code{sambe}" - shrunk/sample block diagonal covariance by experts.
-\item "\code{shrbv}"/"\code{sambv}" - shrunk/sample block diagonal covariance by variables.
-}}
+\item{comb}{A string specifying the reconciliation method. For details, see \link{cscov}.}
 
 \item{res}{A list of \eqn{p} numeric (\eqn{N \times n}) matrix containing the
 in-sample residuals. This input is used to compute some covariance matrices.}
@@ -37,21 +33,20 @@ in-sample residuals. This input is used to compute some covariance matrices.}
 \item{approach}{A string specifying the approach used to compute the reconciled
 forecasts. Options include:
 \itemize{
-\item "\code{proj}" (\emph{default}): zero-constrained approach.
-\item "\code{strc}": Structural approach.
+\item "\code{proj}" (\emph{default}): zero-constrained projection approach.
+\item "\code{strc}": structural approach.
 }}
 
-\item{...}{Arguments passed on to
-\href{https://danigiro.github.io/FoReco/reference/cscov.html}{\code{FoReco::cscov}}.}
+\item{...}{Arguments passed on to \link{cscov}.}
 }
 \value{
 A list of matrices:
-\item{M}{The projection matrix.}
-\item{Omega}{The matrix formed by the combination weights of the multi-task forecast combination.}
-\item{W}{The forecast error covariance matrix of the base forecasts.}
-\item{Wc}{The forecast error covariance matrix of the combined forecasts.}
-\item{Wtilde}{The forecast error covariance matrix of the reconciled combined forecasts.}
-\item{K}{The matrix that replicates a vector.}
+\item{M}{Projection matrix.}
+\item{Omega}{Matrix of the combination weights of the optimal linear multi-task forecast combination.}
+\item{W}{Forecast error covariance matrix of the base forecasts.}
+\item{Wc}{Forecast error covariance matrix of the combined forecasts.}
+\item{Wtilde}{Forecast error covariance matrix of the reconciled combined forecasts.}
+\item{K}{Matrix that replicates a vector (see Girolimetto and Di Fonzo, 2024).}
 }
 \description{
 This function computes the matrices required for the optimal coherent
@@ -65,9 +60,9 @@ Girolimetto, D. and Di Fonzo, T. (2024), Coherent forecast combination for linea
 constrained multiple time series, \emph{mimeo}.
 }
 \seealso{
-Optimal coherent combination: 
+Other Optimal combination: 
 \code{\link{cscov}()},
-\code{\link{csocc}()},
-\code{\link{occbase}()}
+\code{\link{csmtc}()},
+\code{\link{csocc}()}
 }
-\concept{Optimal coherent combination}
+\concept{Optimal combination}

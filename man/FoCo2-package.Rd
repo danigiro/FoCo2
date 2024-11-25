@@ -6,7 +6,7 @@
 \alias{FoCo2-package}
 \title{FoCo2: Coherent forecast combination for linearly constrained multiple time series}
 \description{
-Methods and tools designed to improve the accuracy and coherence of forecasts across multiple linearly constrained time series using multi-task forecast ombination and reconciliation, ensuring that the resulting forecasts satisfy specified linear constraints while leveraging input from multiple forecasting models or experts.
+Methods and tools designed to improve the forecast accuracy for a linearly constrained multiple time series, while fulfilling the linear/aggregation relationships linking the components. FoCo2 offers multi-task forecast combination and reconciliation approaches leveraging input from multiple forecasting models or experts and ensuring that the resulting forecasts satisfy specified linear constraints. In addition, linear inequality constraints (e.g., non-negativity of the forecasts) can be imposed, if needed.
 }
 \seealso{
 Useful links:

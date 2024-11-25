@@ -33,9 +33,10 @@ navbar:
       href: https://cran.r-project.org/web/packages/FoCo2/index.html
 
 reference:
-  - title: Optimal coherent forecast combination
+  - title: Optimal forecast combination
     contents:
       - csocc
+      - csmtc
   - title: Sequential coherent forecast combination
     contents:
       - csscr
@@ -44,7 +45,6 @@ reference:
     contents:
       - cscov
       - occmat
-      - occbase
   - title: Package
     contents:
       - FoCo2-package

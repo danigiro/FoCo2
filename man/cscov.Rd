@@ -8,33 +8,33 @@
 \alias{cscov.sambv}
 \title{Cross-sectional covariance matrix approximation}
 \usage{
-\method{cscov}{shrbe}(comb = "shrbe", ..., nv = NULL, p = NULL, matNA = NULL,
+\method{cscov}{shrbe}(comb = "shrbe", ..., n = NULL, p = NULL, matNA = NULL,
       res = NULL, mse = TRUE, shrink_fun = shrink_estim)
 
-\method{cscov}{sambe}(comb = "sambe", ..., nv = NULL, p = NULL, matNA = NULL,
+\method{cscov}{sambe}(comb = "sambe", ..., n = NULL, p = NULL, matNA = NULL,
       res = NULL, mse = TRUE)
 
-\method{cscov}{shrbv}(comb = "shrbv", ..., nv = NULL, p = NULL, matNA = NULL,
+\method{cscov}{shrbv}(comb = "shrbv", ..., n = NULL, p = NULL, matNA = NULL,
       res = NULL, mse = TRUE, shrink_fun = shrink_estim)
 
-\method{cscov}{sambv}(comb = "sambv", ..., nv = NULL, p = NULL, matNA = NULL,
+\method{cscov}{sambv}(comb = "sambv", ..., n = NULL, p = NULL, matNA = NULL,
       res = NULL, mse = TRUE)
 }
 \arguments{
 \item{comb}{A string specifying the reconciliation method.
 \itemize{
-\item \href{https://danigiro.github.io/FoReco/}{\code{FoReco}} approximations:
+\item \href{https://danigiro.github.io/FoReco/}{\code{FoReco}} approaches:
 \code{"ols"}, \code{"wls"}, \code{"shr"}, \code{"sam"}.
-\item "\code{shrbe}"/"\code{sambe}" - shrunk/sample block diagonal covariance by experts.
-\item "\code{shrbv}"/"\code{sambv}" - shrunk/sample block diagonal covariance by variables.
+\item "\code{shrbe}"/"\code{sambe}" - shrunk/sample block-diagonal covariance by experts.
+\item "\code{shrbv}"/"\code{sambv}" - shrunk/sample block-diagonal covariance by variables.
 }}
 
 \item{...}{Arguments passed on to
 \href{https://danigiro.github.io/FoReco/reference/cscov.html}{\code{FoReco::cscov}}.}
 
-\item{nv}{Total number of variables.}
+\item{n}{Total number of variables, \eqn{n}.}
 
-\item{p}{Total number of experts.}
+\item{p}{Total number of experts, \eqn{p}.}
 
 \item{matNA}{A (\eqn{n \times p}) matrix consisting of 0s and 1s,
 where each element indicates whether expert \eqn{j} (column) has
@@ -53,20 +53,21 @@ matrix are not mean-corrected.}
 (\emph{default}).}
 }
 \value{
-A (\eqn{m \times m}) symmetric positive (semi-)definite matrix.
+A (\eqn{m \times m}) symmetric positive (semi-)definite matrix, with
+\eqn{m = \sum_{j = 1}^p n_j}, \eqn{n_j \leq n}.
 }
 \description{
 Extended version of the
-\href{https://danigiro.github.io/FoReco/reference/cscov.html}{\code{FoReco::cscov}},
-introducing two new block approximations for the covariance matrix
-(shrunk and sample version). Specifically, \code{shrbe}/\code{sambe}
+\href{https://danigiro.github.io/FoReco/reference/cscov.html}{\code{FoReco::cscov}}
+function, introducing two new approximations for the covariance matrix
+(both shrunk and sample versions). Specifically, \code{shrbe}/\code{sambe}
 assume no correlation between experts, while \code{shrbv}/\code{sambv}
 assume no correlation between variables.
 }
 \seealso{
-Optimal coherent combination: 
+Other Optimal combination: 
+\code{\link{csmtc}()},
 \code{\link{csocc}()},
-\code{\link{occbase}()},
 \code{\link{occmat}()}
 }
-\concept{Optimal coherent combination}
+\concept{Optimal combination}

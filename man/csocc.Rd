@@ -14,11 +14,13 @@ horizon, \eqn{n} is the total number of time series (\eqn{n = n_u + n_b}) and
 \eqn{p} is the total number of experts.}
 
 \item{agg_mat}{A (\eqn{n_u \times n_b}) numeric matrix representing the cross-sectional
-aggregation matrix. It maps the \eqn{n_b} bottom-level (free)
+aggregation matrix, mapping the \eqn{n_b} bottom-level (free)
 variables into the \eqn{n_u} upper (constrained) variables.}
 
 \item{cons_mat}{A (\eqn{n_u \times n}) numeric matrix representing the cross-sectional
-zero constraints. It spans the null space for the reconciled forecasts.}
+zero constraints: each row represents a constraint equation, and each column represents
+a variable. The matrix can be of full rank, meaning the rows are linearly independent,
+but this is not a strict requirement, as the function allows for redundancy in the constraints.}
 
 \item{comb}{A string specifying the reconciliation method. For details, see \link{cscov}.}
 
@@ -28,11 +30,11 @@ in-sample residuals. This input is used to compute some covariance matrices.}
 \item{approach}{A string specifying the approach used to compute the reconciled
 forecasts. Options include:
 \itemize{
-\item "\code{proj}" (\emph{default}): zero-constrained approach.
-\item "\code{strc}": Structural approach.
+\item "\code{proj}" (\emph{default}): zero-constrained projection approach.
+\item "\code{strc}": structural approach.
 }}
 
-\item{nn}{A string specifying the algorithm to compute non-negative reconciled forecasts:
+\item{nn}{A string specifying the algorithm to compute non-negative forecasts:
 \itemize{
 \item "\code{osqp}": OSQP solver (Stellato et al., 2020).
 \item "\code{sntz}": heuristic "set-negative-to-zero" (Di Fonzo and Girolimetto, 2023).
@@ -42,8 +44,13 @@ forecasts. Options include:
 for the \href{https://osqp.org/}{\pkg{osqp}} solver. For details, refer to the
 \href{https://osqp.org/}{\pkg{osqp} documentation} (Stellato et al., 2020).}
 
-\item{bounds}{A (\eqn{n \times 2}) numeric matrix specifying the cross-sectional bounds.
-The first column represents the lower bound, and the second column represents the upper bound.}
+\item{bounds}{A matrix (see \code{set_bounds} in \href{https://danigiro.github.io/FoReco/reference/set_bounds.html}{\pkg{FoReco}})
+with 3 columns (\eqn{i,lower,upper}), such that
+\itemize{
+\item Column 1 represents the cross-sectional series (\eqn{i = 1, \dots, n}).
+\item Column 2 indicates the \emph{lower} bound.
+\item Column 3 indicates the \emph{upper} bound.
+}}
 
 \item{...}{Arguments passed on to \link{cscov}.}
 }
@@ -55,19 +62,26 @@ This function implements the optimal linear coherent forecast combination for a
 linearly constrained (e.g., hierarchical/grouped) multiple time series
 combining forecasts from multiple sources (experts). The method minimizes forecast
 errors while ensuring that the resulting forecasts are coherent, meaning
-they satisfy the constraints across the time series. Using a regression-based
-optimization approach, it combines forecasts from multiple experts,
-accounting for the relations between variables and constraints.
+they satisfy the constraints across the time series. Using a linear constrained
+optimization approach, \link{csocc} combines forecasts from multiple experts,
+accounting for the relations between variables and constraints. In addition, linear
+inequality constraints (e.g. non-negative forecasts) can be imposed, if needed.
 }
 \details{
 If an expert does not provide a forecast for a given variable,
 the missing value can be represented as \code{NA}.
 For instance, consider a case where the number of experts is
-\eqn{p = 4}, with \eqn{n = 3} variable and \eqn{h = 2}. If the
-second expert does not provide predictions for the second variable,
+\eqn{p = 4}, with \eqn{n = 3} variables and \eqn{h = 2}. If the
+second and third experts do not provide forecasts for, respectively, the second and first variable,
 the corresponding matrix in the base list will be as follows:
-\deqn{\texttt{base[[2]]} = \begin{bmatrix} \hat{y}_{1,1} & \texttt{NA} & \hat{y}_{3,2} \\
-\hat{y}_{1,2} & \texttt{NA} & \hat{y}_{3,2} \end{bmatrix}.}
+\deqn{\texttt{base[[1]]} = \begin{bmatrix} \hat{y}_{1,1}^{1} & \hat{y}_{2,1}^{1} & \hat{y}_{3,1}^{1} \\
+\hat{y}_{1,2}^{1} & \hat{y}_{2,2}^{1} & \hat{y}_{3,2}^{1} \end{bmatrix}, \quad
+\texttt{base[[2]]} = \begin{bmatrix} \hat{y}_{1,1}^{2} & \texttt{NA} & \hat{y}_{3,1}^{2} \\
+\hat{y}_{1,2}^{2} & \texttt{NA} & \hat{y}_{3,2}^{2} \end{bmatrix},}
+\deqn{\texttt{base[[3]]} = \begin{bmatrix} \texttt{NA} & \hat{y}_{2,1}^{3} & \hat{y}_{3,1}^{3} \\
+\texttt{NA} & \hat{y}_{2,2}^{3} & \hat{y}_{3,2}^{3} \end{bmatrix}, \quad
+\texttt{base[[4]]} = \begin{bmatrix} \hat{y}_{1,1}^{4} & \hat{y}_{2,1}^{4} & \hat{y}_{3,1}^{4} \\
+\hat{y}_{1,2}^{4} & \hat{y}_{2,2}^{4} & \hat{y}_{3,2}^{4} \end{bmatrix}.}
 }
 \examples{
 set.seed(123)
@@ -81,7 +95,7 @@ base2 <- matrix(rnorm(6, mean = c(20, 10, 10)), 2, byrow = TRUE)
 # (10 x 3) in-sample residuals matrix (simulated), expert 2
 res2 <- t(matrix(rnorm(n = 30), nrow = 3))
 
-## RECTANGULAR CASE
+## BALANCED PANEL OF FORECASTS
 # Base forecasts' and residuals' lists
 brc <- list(base1, base2)
 erc <- list(res1, res2)
@@ -94,7 +108,7 @@ rrc <- csocc(base = brc, agg_mat = A, comb = "wls", res = erc)
 C <- t(c(1, -1, -1))
 rrc <- csocc(base = brc, cons_mat = C, comb = "wls", res = erc) # same results
 
-## NON-RECTANGULAR CASE
+## UNBALANCED PANEL OF FORECASTS
 base2[, 2] <- res2[, 2] <-  NA
 
 # Base forecasts' and residuals' lists
@@ -119,9 +133,9 @@ An Operator Splitting solver for Quadratic Programs,
 \doi{10.1007/s12532-020-00179-2}
 }
 \seealso{
-Optimal coherent combination: 
+Other Optimal combination: 
 \code{\link{cscov}()},
-\code{\link{occbase}()},
+\code{\link{csmtc}()},
 \code{\link{occmat}()}
 }
-\concept{Optimal coherent combination}
+\concept{Optimal combination}

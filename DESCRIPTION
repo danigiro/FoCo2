@@ -1,7 +1,7 @@
 Package: FoCo2
 Type: Package
 Title: Coherent forecast combination for linearly constrained multiple time series
-Version: 0.1.0.006
+Version: 0.1.0.021
 Authors@R: 
     c(person(given = "Daniele",
              family = "Girolimetto",
@@ -12,11 +12,12 @@ Authors@R:
              family = "Di Fonzo",
              role = c("aut", "fnd"),
              comment = c(ORCID = "0000-0003-3388-7827")))
-Description: Methods and tools designed to improve the accuracy and coherence of 
-    forecasts across multiple linearly constrained time series using multi-task 
-    forecast ombination and reconciliation, ensuring that the resulting forecasts 
-    satisfy specified linear constraints while leveraging input from multiple 
-    forecasting models or experts.
+Description: Methods and tools designed to improve the forecast accuracy for a linearly 
+    constrained multiple time series, while fulfilling the linear/aggregation relationships 
+    linking the components. FoCo2 offers multi-task forecast combination and reconciliation 
+    approaches leveraging input from multiple forecasting models or experts and ensuring 
+    that the resulting forecasts satisfy specified linear constraints. In addition, linear 
+    inequality constraints (e.g., non-negativity of the forecasts) can be imposed, if needed.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
