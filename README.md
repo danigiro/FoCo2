@@ -1,18 +1,15 @@
 
 # FoCo² <img src="man/figures/logo.svg" title="S'i' fosse foco, arderei 'l mondo (Sonetti, 86) Cecco Angiolieri, Italian poet." alt="logo" align="right" width="150" style="border: none; float: right;"/>
 
-<!-- badges: start -->
-
 [![CRAN
 status](https://www.r-pkg.org/badges/version/FoCo2)](https://CRAN.R-project.org/package=FoCo2)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![devel
-version](https://img.shields.io/badge/devel%20version-0.1.0.001-blue.svg)](https://github.com/daniGiro/FoCo2)
+version](https://img.shields.io/badge/devel%20version-0.1.0-blue.svg)](https://github.com/daniGiro/FoCo2)
 [![License:
 GPL-3](https://img.shields.io/badge/license-GPL--3-forestgreen.svg)](https://cran.r-project.org/web/licenses/GPL-3)
 [![R-CMD-check](https://github.com/danigiro/FoCo2/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/danigiro/FoCo2/actions/workflows/R-CMD-check.yaml)
-<!-- badges: end -->
 
 > *S’i’ fosse foco, arderei ’l mondo* (Sonetti, 86) Cecco Angiolieri,
 > Italian poet.
