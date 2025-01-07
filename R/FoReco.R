@@ -70,7 +70,7 @@ find_bts <- function(strc_mat){
 # Solve a Quadratic problem: Robust function
 wqp_sys <- function(Dmat, p, dvec = NULL, factorized = FALSE, nearPD = FALSE, scale = FALSE){
   if(nearPD){
-    cov_mat <- Matrix::nearPD(Dmat)$mat
+    Dmat <- Matrix::nearPD(Dmat)$mat
   }
 
   if(factorized){
@@ -78,7 +78,7 @@ wqp_sys <- function(Dmat, p, dvec = NULL, factorized = FALSE, nearPD = FALSE, sc
   }
 
   if(is.null(dvec)){
-    dvec = rep(0, p)
+    dvec <- rep(0, p)
   }
 
   if(scale){
