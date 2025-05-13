@@ -211,8 +211,8 @@ cscov.shrbv <- function(comb = "shrbv", ..., n = NULL, p = NULL, matNA = NULL,
   P <- commat(n, p)
   if(!is.null(matNA)){
     if(any(!ina)){
-      P <- P[ina, , drop = FALSE]
-      P <- P[, colSums(P)!=0, drop = FALSE]
+      P <- P[, ina, drop = FALSE]
+      P <- P[rowSums(P)!=0, , drop = FALSE]
     }
   }
   t(P)%*%cov_mat%*%P
@@ -270,8 +270,8 @@ cscov.sambv <- function(comb = "sambv", ..., n = NULL, p = NULL, matNA = NULL,
   P <- commat(n, p)
   if(!is.null(matNA)){
     if(any(!ina)){
-      P <- P[ina, , drop = FALSE]
-      P <- P[, colSums(P)!=0, drop = FALSE]
+      P <- P[, ina, drop = FALSE]
+      P <- P[rowSums(P)!=0, , drop = FALSE]
     }
   }
   t(P)%*%cov_mat%*%P

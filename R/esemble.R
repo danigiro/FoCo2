@@ -1,8 +1,13 @@
 .esemble <- function(y, weights, res = NULL){
-  if(NROW(weights) == length(y)){
+  if(is.null(weights)){
     tmp <- simplify2array(y)
+    idna <- apply(tmp, c(1, 2), function(x) ifelse(all(is.na(x)), NA, 1))
+    apply(tmp, c(1, 2), function(x) mean(x, na.rm = TRUE))*idna
+  }else if(NROW(weights) == length(y)){
+    tmp <- simplify2array(y)
+    idna <- apply(tmp, c(1, 2), function(x) ifelse(all(is.na(x)), NA, 1))
     tmp[is.na(tmp)] <- 0
-    sapply(1:NCOL(weights), function(i) tmp[,i,]%*%weights[,i])
+    sapply(1:NCOL(weights), function(i) tmp[,i,]%*%weights[,i])*idna
   }else{
     tmp <- do.call(cbind, y)
     tmp%*%weights
@@ -12,8 +17,8 @@
 .weights <- function(y = NULL, fc = "sa", res = NULL, mse = TRUE, shrink = TRUE,
                      factorized = FALSE, nnw = FALSE, ...){
   if(fc == "sa"){
-    tmp <- simplify2array(y)
-    w <- apply(tmp, 2, wfoco_sa)
+    #tmp <- simplify2array(y)
+    w <- NULL
   }else if(fc %in% c("bg", "var")){
     tmp <- simplify2array(res)
     w <- apply(tmp, 2, wfoco_var, mse = mse)
@@ -29,8 +34,9 @@
 
 wfoco_sa <- function(fc){
   xna <- !is.na(fc)
-  xna <- apply(xna, 2, all)
-  xna*(1/sum(xna))
+  den <- rowSums(xna)
+  den[den==0] <- NA
+  xna*(1/den)
 }
 
 wfoco_var <- function(res, mse = TRUE){

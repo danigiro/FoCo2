@@ -4,7 +4,8 @@
 \alias{csmtc}
 \title{Cross-sectional optimal multi-task forecast combination}
 \usage{
-csmtc(base, agg_mat = NULL, comb = "ols", res = NULL, ...)
+csmtc(base, comb = "ols", res = NULL, approach = "proj",
+      nn = NULL, settings = NULL, bounds = NULL, agg_mat = NULL, ...)
 }
 \arguments{
 \item{base}{A list of \eqn{p} numeric (\eqn{h \times n}) matrix or multivariate time series
@@ -12,14 +13,39 @@ csmtc(base, agg_mat = NULL, comb = "ols", res = NULL, ...)
 horizon, \eqn{n} is the total number of time series (\eqn{n = n_u + n_b}) and
 \eqn{p} is the total number of experts.}
 
-\item{agg_mat}{A (\eqn{n_u \times n_b}) numeric matrix representing the cross-sectional
-aggregation matrix, mapping the \eqn{n_b} bottom-level (free)
-variables into the \eqn{n_u} upper (constrained) variables.}
-
 \item{comb}{A string specifying the reconciliation method. For details, see \link{cscov}.}
 
 \item{res}{A list of \eqn{p} numeric (\eqn{N \times n}) matrix containing the
 in-sample residuals. This input is used to compute some covariance matrices.}
+
+\item{approach}{A string specifying the approach used to compute the reconciled
+forecasts. Options include:
+\itemize{
+\item "\code{proj}" (\emph{default}): zero-constrained projection approach.
+\item "\code{osqp}": OSQP solver (Stellato et al., 2020).
+}}
+
+\item{nn}{A string specifying the algorithm to compute non-negative forecasts:
+\itemize{
+\item "\code{osqp}": OSQP solver (Stellato et al., 2020).
+\item "\code{sntz}": heuristic "set-negative-to-zero".
+}}
+
+\item{settings}{An object of class \code{osqpSettings} specifying settings
+for the \href{https://osqp.org/}{\pkg{osqp}} solver. For details, refer to the
+\href{https://osqp.org/}{\pkg{osqp} documentation} (Stellato et al., 2020).}
+
+\item{bounds}{A matrix (see \code{set_bounds} in \href{https://danigiro.github.io/FoReco/reference/set_bounds.html}{\pkg{FoReco}})
+with 3 columns (\eqn{i,lower,upper}), such that
+\itemize{
+\item Column 1 represents the cross-sectional series (\eqn{i = 1, \dots, n}).
+\item Column 2 indicates the \emph{lower} bound.
+\item Column 3 indicates the \emph{upper} bound.
+}}
+
+\item{agg_mat}{A (\eqn{n_u \times n_b}) numeric matrix representing the cross-sectional
+aggregation matrix, mapping the \eqn{n_b} bottom-level (free)
+variables into the \eqn{n_u} upper (constrained) variables.}
 
 \item{...}{Arguments passed on to \link{cscov}.}
 }

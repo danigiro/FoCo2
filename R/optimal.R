@@ -144,7 +144,7 @@ csocc <- function(base, agg_mat, cons_mat,
   }
 
   ina <- sapply(base, function(bmat){
-    is.na(colSums(bmat))
+    apply(bmat, 2, function(x) all(is.na(x)))
   })
   base <- lapply(base, rbind)
   base <- do.call(cbind, base)
@@ -230,9 +230,21 @@ csocc <- function(base, agg_mat, cons_mat,
 #' This function computes the optimal multi-task linear forecast combination, as described
 #' in Girolimetto and Di Fonzo (2024)
 #'
-#' @usage csmtc(base, agg_mat = NULL, comb = "ols", res = NULL, ...)
+#' @usage csmtc(base, comb = "ols", res = NULL, approach = "proj",
+#'       nn = NULL, settings = NULL, bounds = NULL, agg_mat = NULL, ...)
 #'
 #' @inheritParams csocc
+#' @param approach A string specifying the approach used to compute the reconciled
+#' forecasts. Options include:
+#'   \itemize{
+#'   \item "\code{proj}" (\emph{default}): zero-constrained projection approach.
+#'   \item "\code{osqp}": OSQP solver (Stellato et al., 2020).
+#'   }
+#' @param nn A string specifying the algorithm to compute non-negative forecasts:
+#'   \itemize{
+#'   \item "\code{osqp}": OSQP solver (Stellato et al., 2020).
+#'   \item "\code{sntz}": heuristic "set-negative-to-zero".
+#'   }
 #'
 #' @returns A (\eqn{h \times n}) numeric matrix of cross-sectional multi-task combined forecasts.
 #'
@@ -285,8 +297,8 @@ csocc <- function(base, agg_mat, cons_mat,
 #' M%*%t(yc)-t(rgc)
 #'
 #' @export
-csmtc <- function(base, agg_mat = NULL,
-                  comb = "ols", res = NULL, ...){
+csmtc <- function(base, comb = "ols", res = NULL, approach = "proj",
+                  nn = NULL, settings = NULL, bounds = NULL, agg_mat = NULL, ...){
 
   # Check if 'base' is provided and its dimensions match with the data
   if(missing(base)){
@@ -303,9 +315,14 @@ csmtc <- function(base, agg_mat = NULL,
     strc_mat <- tmp$strc_mat
   }
 
+
   ina <- sapply(base, function(bmat){
-    is.na(colSums(bmat))
+    apply(bmat, 2, function(x) all(is.na(x)))
   })
+
+  # ina <- sapply(base, function(bmat){
+  #   is.na(colSums(bmat))
+  # })
   base <- lapply(base, rbind)
   base <- do.call(cbind, base)
 
@@ -333,26 +350,22 @@ csmtc <- function(base, agg_mat = NULL,
     }
   }
 
-  k_mat <- Matrix::kronecker(rep(1, p), .sparseDiagonal(n))[!as.vector(ina), , drop = FALSE]
+  mtfore <- mtfc(base = base,
+                 cov_mat = cov_mat,
+                 approach = approach,
+                 nn = nn,
+                 ina = as.vector(ina),
+                 p = p,
+                 n = n,
+                 bounds = bounds,
+                 settings = settings)
 
-  if(isDiagonal(cov_mat)){
-    cov_inv <- Matrix::.sparseDiagonal(x = Matrix::diag(cov_mat)^(-1))
-    cov_k <- Matrix::crossprod(k_mat, cov_inv)%*%k_mat
-    cov_k_inv <- Matrix::.sparseDiagonal(x = Matrix::diag(cov_k)^(-1))
-    base_comp <- Matrix::tcrossprod(base, cov_inv)%*%Matrix::tcrossprod(k_mat, cov_k_inv)
-  }else{
-    cov_k <- lin_sys(cov_mat, k_mat)
-    k_cov_k <- methods::as(Matrix::crossprod(k_mat, cov_k), "CsparseMatrix")
-    ls2 <- lin_sys(k_cov_k, t(cov_k))
-    base_comp <- methods::as(Matrix::tcrossprod(base, ls2), "CsparseMatrix")
-  }
-
-  rownames(base_comp) <- paste0("h-", 1:NROW(base_comp))
+  rownames(mtfore) <- paste0("h-", 1:NROW(mtfore))
   if(is.null(colnames(base))){
-    colnames(base_comp) <- paste0("s-", 1:NCOL(base_comp))
+    colnames(mtfore) <- paste0("s-", 1:NCOL(mtfore))
   }else{
-    colnames(base_comp) <- rownames(ina)
+    colnames(mtfore) <- rownames(ina)
   }
 
-  return(base_comp)
+  return(as.matrix(mtfore))
 }

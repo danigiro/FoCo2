@@ -9,15 +9,15 @@ resemble <- function(approach, base, nn = NULL, bounds = NULL, ...){
 
   # Check if 'nn' is provided and adjust 'rmat' accordingly
   if(!is.null(nn)){
-    if(nn == "osqp"){
-      nn <- paste(approach, nn, sep = "_")
+    if(nn %in% c("osqp", TRUE)){
+      nn <- paste(approach, "osqp", sep = "_")
     }
 
-    if(!all(rmat >= -sqrt(.Machine$double.eps))){
+    if(!all(rmat >= -sqrt(.Machine$double.eps), na.rm = TRUE)){
       class(approach)[length(class(approach))] <- nn
       rmat <- .resemble(approach = approach, base = base, nn = nn, reco = rmat,
                         bounds = bounds, ...)
-    } else if(!all(rmat >= 0)){
+    }else if(!all(rmat >= 0, na.rm = TRUE)){
       rmat[rmat < 0] <- 0
     }
   }
@@ -34,7 +34,7 @@ resemble <- function(approach, base, nn = NULL, bounds = NULL, ...){
       c(any(c(idl, idb)), any(c(idl0, idb0)))
     })
 
-    if(any(checkb[1,])){
+    if(any(checkb[1,], na.rm = TRUE)){
       if(is.null(attr(bounds, "approach")) || attr(bounds, "approach") == "osqp"){
         attr(bounds, "approach") <- paste(approach, "osqp", sep = "_")
       }
@@ -42,7 +42,7 @@ resemble <- function(approach, base, nn = NULL, bounds = NULL, ...){
       class(approach)[length(class(approach))] <- attr(bounds, "approach")
       rmat <- .resemble(approach = approach, base = base, nn = nn, reco = rmat,
                         bounds = bounds, ...)
-    }else if(any(checkb[2,])){
+    }else if(any(checkb[2,], na.rm = TRUE)){
       rmat <- t(apply(rmat, 1, function(x){
         id <- x[nbid]<=bounds[,2,drop = TRUE]+sqrt(.Machine$double.eps)
         x[nbid][id] <- bounds[,2,drop = TRUE][id]
@@ -443,10 +443,10 @@ resemble.strc_osqp <- function(base, strc_mat, cov_mat, p, ina,
 }
 
 
-resemble.sntz <- function(base, reco, strc_mat, cov_mat, id_nn = NULL, settings = NULL, ...){
+resemble.sntz <- function(base, reco, strc_mat, id_nn = NULL, settings = NULL, ...){
   # Check input
-  if(missing(strc_mat) | missing(cov_mat)){
-    cli_abort("Mandatory arguments: {.arg strc_mat} and {.arg cov_mat}.",
+  if(missing(strc_mat)){
+    cli_abort("Mandatory arguments: {.arg strc_mat}.",
               call = NULL)
   }
 
@@ -483,7 +483,7 @@ resemble.sntz <- function(base, reco, strc_mat, cov_mat, id_nn = NULL, settings 
 resemble.sftb <- function(base, reco, strc_mat, id_nn = NULL, bounds = NULL, ...){
   # Check input
   if(missing(strc_mat)){
-    cli_abort("Mandatory arguments: {.arg strc_mat} and {.arg cov_mat}.",
+    cli_abort("Mandatory arguments: {.arg strc_mat}.",
               call = NULL)
   }
 
@@ -496,7 +496,7 @@ resemble.sftb <- function(base, reco, strc_mat, id_nn = NULL, bounds = NULL, ...
   }
 
   if(is.null(strc_mat)){
-    cli_abort(c("Argument {.arg agg_mat} is missing. The {.strong sntz} approach
+    cli_abort(c("Argument {.arg agg_mat} is missing. The {.strong sftb} approach
                 is available only for hierarchical/groupped time series."), call = NULL)
   }
 
