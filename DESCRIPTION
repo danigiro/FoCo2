@@ -1,11 +1,11 @@
 Package: FoCo2
 Type: Package
-Title: Coherent forecast combination for linearly constrained multiple time series
-Version: 0.1.1.0004
+Title: Coherent Forecast Combination for Linearly Constrained Multiple Time Series
+Version: 0.1.2
 Authors@R: 
     c(person(given = "Daniele",
              family = "Girolimetto",
-             role = c("aut", "cre", "fnd"),
+             role = c("aut", "cre", "fnd", "cph"),
              email = "daniele.girolimetto@unipd.it",
              comment = c(ORCID = "0000-0001-9387-1232")),
       person(given = "Tommaso",
@@ -14,7 +14,8 @@ Authors@R:
              comment = c(ORCID = "0000-0003-3388-7827")))
 Description: Methods and tools designed to improve the forecast accuracy for a linearly 
     constrained multiple time series, while fulfilling the linear/aggregation relationships 
-    linking the components. FoCo2 offers multi-task forecast combination and reconciliation 
+    linking the components (Girolimetto and Di Fonzo, 2024 <doi:10.48550/arXiv.2412.03429>). 
+    FoCo2 offers multi-task forecast combination and reconciliation 
     approaches leveraging input from multiple forecasting models or experts and ensuring 
     that the resulting forecasts satisfy specified linear constraints. In addition, linear 
     inequality constraints (e.g., non-negativity of the forecasts) can be imposed, if needed.
@@ -23,11 +24,10 @@ Encoding: UTF-8
 LazyData: true
 Depends: R (>= 3.4), Matrix, FoReco
 Imports: stats, cli, methods, quadprog, osqp
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
-URL: https://github.com/danigiro/FoCo2
-    https://danigiro.github.io/FoCo2
-BugReports: https://github.com/danigiro/FoCo2/issues
+URL: https://github.com/danigiro/FoCo2/, https://danigiro.github.io/FoCo2/
+BugReports: https://github.com/danigiro/FoCo2/issues/
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

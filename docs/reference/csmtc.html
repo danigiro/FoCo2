@@ -12,7 +12,7 @@ in Girolimetto and Di Fonzo (2024)"><meta property="og:image" content="https://d
     
     <a class="navbar-brand me-2" href="../index.html">FoCo2</a>
 
-    <small class="nav-text text-default me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.0</small>
+    <small class="nav-text text-default me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -75,7 +75,8 @@ in Girolimetto and Di Fonzo (2024)</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">csmtc</span><span class="op">(</span><span class="va">base</span>, agg_mat <span class="op">=</span> <span class="cn">NULL</span>, comb <span class="op">=</span> <span class="st">"ols"</span>, res <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">csmtc</span><span class="op">(</span><span class="va">base</span>, comb <span class="op">=</span> <span class="st">"ols"</span>, res <span class="op">=</span> <span class="cn">NULL</span>, approach <span class="op">=</span> <span class="st">"proj"</span>,</span>
+<span>      nn <span class="op">=</span> <span class="cn">NULL</span>, settings <span class="op">=</span> <span class="cn">NULL</span>, bounds <span class="op">=</span> <span class="cn">NULL</span>, agg_mat <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -87,12 +88,6 @@ horizon, \(n\) is the total number of time series (\(n = n_u + n_b\)) and
 \(p\) is the total number of experts.</p></dd>
 
 
-<dt>agg_mat</dt>
-<dd><p>A (\(n_u \times n_b\)) numeric matrix representing the cross-sectional
-aggregation matrix, mapping the \(n_b\) bottom-level (free)
-variables into the \(n_u\) upper (constrained) variables.</p></dd>
-
-
 <dt>comb</dt>
 <dd><p>A string specifying the reconciliation method. For details, see <a href="cscov.html">cscov</a>.</p></dd>
 
@@ -100,6 +95,40 @@ variables into the \(n_u\) upper (constrained) variables.</p></dd>
 <dt>res</dt>
 <dd><p>A list of \(p\) numeric (\(N \times n\)) matrix containing the
 in-sample residuals. This input is used to compute some covariance matrices.</p></dd>
+
+
+<dt>approach</dt>
+<dd><p>A string specifying the approach used to compute the reconciled
+forecasts. Options include:</p><ul><li><p>"<code>proj</code>" (<em>default</em>): zero-constrained projection approach.</p></li>
+<li><p>"<code>osqp</code>": OSQP solver (Stellato et al., 2020).</p></li>
+</ul></dd>
+
+
+<dt>nn</dt>
+<dd><p>A string specifying the algorithm to compute non-negative forecasts:</p><ul><li><p>"<code>osqp</code>": OSQP solver (Stellato et al., 2020).</p></li>
+<li><p>"<code>sntz</code>": heuristic "set-negative-to-zero".</p></li>
+</ul></dd>
+
+
+<dt>settings</dt>
+<dd><p>An object of class <code>osqpSettings</code> specifying settings
+for the <a href="https://osqp.org/" class="external-link"><span class="pkg">osqp</span></a> solver. For details, refer to the
+<a href="https://osqp.org/" class="external-link"><span class="pkg">osqp</span> documentation</a> (Stellato et al., 2020).</p></dd>
+
+
+<dt>bounds</dt>
+<dd><p>A matrix (see <code>set_bounds</code> in
+<a href="https://danigiro.github.io/FoReco/reference/set_bounds.html" class="external-link"><span class="pkg">FoReco</span></a>)
+with 3 columns (\(i,lower,upper\)), such that</p><ul><li><p>Column 1 represents the cross-sectional series (\(i = 1, \dots, n\)).</p></li>
+<li><p>Column 2 indicates the <em>lower</em> bound.</p></li>
+<li><p>Column 3 indicates the <em>upper</em> bound.</p></li>
+</ul></dd>
+
+
+<dt>agg_mat</dt>
+<dd><p>A (\(n_u \times n_b\)) numeric matrix representing the cross-sectional
+aggregation matrix, mapping the \(n_b\) bottom-level (free)
+variables into the \(n_u\) upper (constrained) variables.</p></dd>
 
 
 <dt>...</dt>
@@ -115,7 +144,8 @@ in-sample residuals. This input is used to compute some covariance matrices.</p>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Girolimetto, D. and Di Fonzo, T. (2024), Coherent forecast combination for linearly
-constrained multiple time series, <em>mimeo</em>.</p>
+constrained multiple time series, <a href="https://doi.org/10.48550/arXiv.2412.03429" class="external-link">doi:10.48550/arXiv.2412.03429</a>
+.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

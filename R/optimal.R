@@ -40,7 +40,8 @@
 #' @param settings An object of class \code{osqpSettings} specifying settings
 #' for the \href{https://osqp.org/}{\pkg{osqp}} solver. For details, refer to the
 #' \href{https://osqp.org/}{\pkg{osqp} documentation} (Stellato et al., 2020).
-#' @param bounds A matrix (see \code{set_bounds} in \href{https://danigiro.github.io/FoReco/reference/set_bounds.html}{\pkg{FoReco}})
+#' @param bounds A matrix (see \code{set_bounds} in
+#' \href{https://danigiro.github.io/FoReco/reference/set_bounds.html}{\pkg{FoReco}})
 #' with 3 columns (\eqn{i,lower,upper}), such that
 #' \itemize{
 #'   \item Column 1 represents the cross-sectional series (\eqn{i = 1, \dots, n}).
@@ -71,7 +72,7 @@
 #' forecasts, \emph{Solar Energy}, 251, 13–29. \doi{10.1016/j.solener.2023.01.003}
 #'
 #' Girolimetto, D. and Di Fonzo, T. (2024), Coherent forecast combination for linearly
-#' constrained multiple time series, \emph{mimeo}.
+#' constrained multiple time series, \doi{10.48550/arXiv.2412.03429}.
 #'
 #' Stellato, B., Banjac, G., Goulart, P., Bemporad, A. and Boyd, S. (2020), OSQP:
 #' An Operator Splitting solver for Quadratic Programs,
@@ -138,7 +139,7 @@ csocc <- function(base, agg_mat, cons_mat,
   cons_mat <- tmp$cons_mat
   p <- length(base)
 
-  # Check if 'base' is provided and its dimensions match with the data
+  # Check if 'base' is provided
   if(missing(base)){
     cli_abort("Argument {.arg base} is missing, with no default.", call = NULL)
   }
@@ -250,7 +251,7 @@ csocc <- function(base, agg_mat, cons_mat,
 #'
 #' @references
 #' Girolimetto, D. and Di Fonzo, T. (2024), Coherent forecast combination for linearly
-#' constrained multiple time series, \emph{mimeo}.
+#' constrained multiple time series, \doi{10.48550/arXiv.2412.03429}.
 #'
 #' @family Optimal combination
 #'

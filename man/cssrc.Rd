@@ -91,7 +91,7 @@ forecasts. \emph{International Journal of Forecasting}, 31(4), 1096–1103.
 \doi{10.1016/j.ijforecast.2015.03.009}.
 
 Girolimetto, D. and Di Fonzo, T. (2024), Coherent forecast combination for linearly
-constrained multiple time series, \emph{mimeo}.
+constrained multiple time series. \doi{10.48550/arXiv.2412.03429}.
 
 Newbold, P. and Granger, C. W. (1974), Experience with forecasting
 univariate time series and the combination of forecasts,

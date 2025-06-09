@@ -44,7 +44,8 @@ forecasts. Options include:
 for the \href{https://osqp.org/}{\pkg{osqp}} solver. For details, refer to the
 \href{https://osqp.org/}{\pkg{osqp} documentation} (Stellato et al., 2020).}
 
-\item{bounds}{A matrix (see \code{set_bounds} in \href{https://danigiro.github.io/FoReco/reference/set_bounds.html}{\pkg{FoReco}})
+\item{bounds}{A matrix (see \code{set_bounds} in
+\href{https://danigiro.github.io/FoReco/reference/set_bounds.html}{\pkg{FoReco}})
 with 3 columns (\eqn{i,lower,upper}), such that
 \itemize{
 \item Column 1 represents the cross-sectional series (\eqn{i = 1, \dots, n}).
@@ -125,7 +126,7 @@ Di Fonzo, T. and Girolimetto, D. (2023), Spatio-temporal reconciliation of solar
 forecasts, \emph{Solar Energy}, 251, 13–29. \doi{10.1016/j.solener.2023.01.003}
 
 Girolimetto, D. and Di Fonzo, T. (2024), Coherent forecast combination for linearly
-constrained multiple time series, \emph{mimeo}.
+constrained multiple time series, \doi{10.48550/arXiv.2412.03429}.
 
 Stellato, B., Banjac, G., Goulart, P., Bemporad, A. and Boyd, S. (2020), OSQP:
 An Operator Splitting solver for Quadratic Programs,

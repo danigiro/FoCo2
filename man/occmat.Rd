@@ -57,7 +57,7 @@ coherence across the variables.
 }
 \references{
 Girolimetto, D. and Di Fonzo, T. (2024), Coherent forecast combination for linearly
-constrained multiple time series, \emph{mimeo}.
+constrained multiple time series, \doi{10.48550/arXiv.2412.03429}.
 }
 \seealso{
 Other Optimal combination: 
