@@ -1,3 +1,5 @@
+# FoCo2 (development version)
+
 # FoCo2 0.1.2
 * Release on CRAN
 
