@@ -16,6 +16,7 @@ navbar:
     github:
       icon: fab fa-github fa-lg
       href: https://github.com/danigiro/FoCo2
+      aria-label: View on GitHub
     reference:
       text: "Reference"
       icon: fa-book
@@ -30,7 +31,8 @@ navbar:
       href: index.html
     rpro:
       icon: fab fa-r-project fa-lg
-      href: https://cran.r-project.org/web/packages/FoCo2/index.html
+      href: https://CRAN.R-project.org/package=FoCo2
+      aria-label: View on CRAN
 
 reference:
   - title: Optimal forecast combination

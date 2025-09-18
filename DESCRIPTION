@@ -24,7 +24,7 @@ Encoding: UTF-8
 LazyData: true
 Depends: R (>= 3.4), Matrix, FoReco
 Imports: stats, cli, methods, quadprog, osqp
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
 URL: https://github.com/danigiro/FoCo2/, https://danigiro.github.io/FoCo2/
 BugReports: https://github.com/danigiro/FoCo2/issues/

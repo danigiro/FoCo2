@@ -99,7 +99,7 @@ univariate time series and the combination of forecasts,
 \doi{10.2307/2344546}
 }
 \seealso{
-Sequential coherent combination: 
+Sequential coherent combination:
 \code{\link{cssrc}()}
 }
 \concept{Sequential coherent combination}

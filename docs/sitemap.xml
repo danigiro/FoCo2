@@ -1,42 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://danigiro.github.io/FoCo2/404.html</loc>
-  </url>
-  <url>
-    <loc>https://danigiro.github.io/FoCo2/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://danigiro.github.io/FoCo2/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://danigiro.github.io/FoCo2/index.html</loc>
-  </url>
-  <url>
-    <loc>https://danigiro.github.io/FoCo2/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://danigiro.github.io/FoCo2/reference/FoCo2-package.html</loc>
-  </url>
-  <url>
-    <loc>https://danigiro.github.io/FoCo2/reference/cscov.html</loc>
-  </url>
-  <url>
-    <loc>https://danigiro.github.io/FoCo2/reference/csmtc.html</loc>
-  </url>
-  <url>
-    <loc>https://danigiro.github.io/FoCo2/reference/csocc.html</loc>
-  </url>
-  <url>
-    <loc>https://danigiro.github.io/FoCo2/reference/csscr.html</loc>
-  </url>
-  <url>
-    <loc>https://danigiro.github.io/FoCo2/reference/cssrc.html</loc>
-  </url>
-  <url>
-    <loc>https://danigiro.github.io/FoCo2/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://danigiro.github.io/FoCo2/reference/occmat.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://danigiro.github.io/FoCo2/404.html</loc></url>
+<url><loc>https://danigiro.github.io/FoCo2/LICENSE.html</loc></url>
+<url><loc>https://danigiro.github.io/FoCo2/authors.html</loc></url>
+<url><loc>https://danigiro.github.io/FoCo2/index.html</loc></url>
+<url><loc>https://danigiro.github.io/FoCo2/news/index.html</loc></url>
+<url><loc>https://danigiro.github.io/FoCo2/reference/FoCo2-package.html</loc></url>
+<url><loc>https://danigiro.github.io/FoCo2/reference/cscov.html</loc></url>
+<url><loc>https://danigiro.github.io/FoCo2/reference/csmtc.html</loc></url>
+<url><loc>https://danigiro.github.io/FoCo2/reference/csocc.html</loc></url>
+<url><loc>https://danigiro.github.io/FoCo2/reference/csscr.html</loc></url>
+<url><loc>https://danigiro.github.io/FoCo2/reference/cssrc.html</loc></url>
+<url><loc>https://danigiro.github.io/FoCo2/reference/index.html</loc></url>
+<url><loc>https://danigiro.github.io/FoCo2/reference/occmat.html</loc></url>
 </urlset>
+
