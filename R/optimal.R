@@ -120,15 +120,26 @@
 #' rgc <- csocc(base = bgc, agg_mat = A, comb = "shrbe", res = egc)
 #'
 #' @export
-csocc <- function(base, agg_mat, cons_mat,
-                   comb = "ols", res = NULL, approach = "proj",
-                   nn = NULL, settings = NULL, bounds = NULL, ...){
-
+csocc <- function(
+  base,
+  agg_mat,
+  cons_mat,
+  comb = "ols",
+  res = NULL,
+  approach = "proj",
+  nn = NULL,
+  settings = NULL,
+  bounds = NULL,
+  ...
+) {
   # Check if either 'agg_mat' or 'cons_mat' is specified
-  if(missing(agg_mat) && missing(cons_mat)){
-    cli_abort("Argument {.arg agg_mat} (or {.arg cons_mat}) is missing,
-              with no default.", call = NULL)
-  } else if(!missing(agg_mat)){
+  if (missing(agg_mat) && missing(cons_mat)) {
+    cli_abort(
+      "Argument {.arg agg_mat} (or {.arg cons_mat}) is missing,
+              with no default.",
+      call = NULL
+    )
+  } else if (!missing(agg_mat)) {
     tmp <- cstools(agg_mat = agg_mat)
   } else {
     tmp <- cstools(cons_mat = cons_mat)
@@ -137,91 +148,109 @@ csocc <- function(base, agg_mat, cons_mat,
   n <- tmp$dim[["n"]]
   strc_mat <- tmp$strc_mat
   cons_mat <- tmp$cons_mat
-  p <- length(base)
 
   # Check if 'base' is provided
-  if(missing(base)){
+  if (missing(base)) {
     cli_abort("Argument {.arg base} is missing, with no default.", call = NULL)
   }
+  p <- length(base)
 
-  ina <- sapply(base, function(bmat){
+  ina <- sapply(base, function(bmat) {
     apply(bmat, 2, function(x) all(is.na(x)))
   })
   base <- lapply(base, rbind)
   base <- do.call(cbind, base)
 
-  if(NCOL(base) != n*p){
+  if (NCOL(base) != n * p) {
     cli_abort("Incorrect {.arg base} columns dimension.", call = NULL)
   }
   base <- base[, !as.vector(ina), drop = FALSE]
 
   # Check bounds cs
-  if(!is.null(bounds)){
-    if(is.vector(bounds)){
+  if (!is.null(bounds)) {
+    if (is.vector(bounds)) {
       bounds <- matrix(bounds, ncol = length(bounds))
     }
-    if(NCOL(bounds) != 3){
+    if (NCOL(bounds) != 3) {
       cli_abort("{.arg bounds} is not a matrix with 3 columns.", call = NULL)
     }
     bounds_approach <- attr(bounds, "approach")
 
-    bounds <- bounds[bounds[,1] <= n, , drop = FALSE]
+    bounds <- bounds[bounds[, 1] <= n, , drop = FALSE]
 
-    if(is.null(bounds)){
+    if (is.null(bounds)) {
       cli_warn("No valid bounds", call = NULL)
-    }else{
+    } else {
       attr(bounds, "approach") <- bounds_approach
     }
   }
 
   # Compute covariance
-  if(!is.null(res)){
+  if (!is.null(res)) {
     res <- do.call(cbind, res)
     res <- res[, !as.vector(ina), drop = FALSE]
   }
 
-  cov_mat <- cscov(comb = comb, n = ifelse(comb == "ols", NCOL(base), n),
-                   matNA = ina, p = p,
-                   agg_mat = rbind(do.call(rbind, rep(list(strc_mat), p-1)), agg_mat),
-                   res = res, ...)
+  cov_mat <- cscov(
+    comb = comb,
+    n = ifelse(comb == "ols", NCOL(base), n),
+    matNA = ina,
+    p = p,
+    agg_mat = rbind(do.call(rbind, rep(list(strc_mat), p - 1)), agg_mat),
+    res = res,
+    ...
+  )
 
-  if(NROW(cov_mat) != NCOL(base) | NCOL(cov_mat) != NCOL(base)){
-    if(any(as.vector(ina))){
-      if(NROW(cov_mat) != length(ina)){
-        cli_abort(c("Incorrect covariance dimensions.",
-                    "i"="Check {.arg res} dimensions."), call = NULL)
+  if (NROW(cov_mat) != NCOL(base) | NCOL(cov_mat) != NCOL(base)) {
+    if (any(as.vector(ina))) {
+      if (NROW(cov_mat) != length(ina)) {
+        cli_abort(
+          c(
+            "Incorrect covariance dimensions.",
+            "i" = "Check {.arg res} dimensions."
+          ),
+          call = NULL
+        )
       }
       cov_mat <- cov_mat[!as.vector(ina), !as.vector(ina), drop = FALSE]
-    }else{
-      cli_abort(c("Incorrect covariance dimensions.",
-                  "i"="Check {.arg res} dimensions."), call = NULL)
+    } else {
+      cli_abort(
+        c(
+          "Incorrect covariance dimensions.",
+          "i" = "Check {.arg res} dimensions."
+        ),
+        call = NULL
+      )
     }
   }
-
-  reco_mat <- resemble(base = base,
-                       cov_mat = cov_mat,
-                       strc_mat = strc_mat,
-                       cons_mat = cons_mat,
-                       approach = approach,
-                       nn = nn,
-                       ina = as.vector(ina),
-                       p = p,
-                       bounds = bounds,
-                       settings = settings)
+  reco_mat <- resemble(
+    base = base,
+    cov_mat = cov_mat,
+    strc_mat = strc_mat,
+    cons_mat = cons_mat,
+    approach = approach,
+    nn = nn,
+    ina = as.vector(ina),
+    p = p,
+    bounds = bounds,
+    settings = settings
+  )
 
   rownames(reco_mat) <- paste0("h-", 1:NROW(reco_mat))
-  if(is.null(colnames(base))){
+  if (is.null(colnames(base))) {
     colnames(reco_mat) <- paste0("s-", 1:NCOL(reco_mat))
-  }else{
+  } else {
     colnames(reco_mat) <- rownames(ina)
   }
 
-  attr(reco_mat, "FoReco") <- list2env(list(info = attr(reco_mat, "info"),
-                                            framework = "Cross-sectional",
-                                            forecast_horizon = NROW(reco_mat),
-                                            comb = comb,
-                                            cs_n = n,
-                                            rfun = "csocc"))
+  attr(reco_mat, "FoReco") <- new_foreco_info(list(
+    info = attr(reco_mat, "info"),
+    framework = "Cross-sectional",
+    forecast_horizon = NROW(reco_mat),
+    comb = comb,
+    cs_n = n,
+    rfun = "csocc"
+  ))
   attr(reco_mat, "info") <- NULL
   return(reco_mat)
 }
@@ -298,11 +327,19 @@ csocc <- function(base, agg_mat, cons_mat,
 #' M%*%t(yc)-t(rgc)
 #'
 #' @export
-csmtc <- function(base, comb = "ols", res = NULL, approach = "proj",
-                  nn = NULL, settings = NULL, bounds = NULL, agg_mat = NULL, ...){
-
+csmtc <- function(
+  base,
+  comb = "ols",
+  res = NULL,
+  approach = "proj",
+  nn = NULL,
+  settings = NULL,
+  bounds = NULL,
+  agg_mat = NULL,
+  ...
+) {
   # Check if 'base' is provided and its dimensions match with the data
-  if(missing(base)){
+  if (missing(base)) {
     cli_abort("Argument {.arg base} is missing, with no default.", call = NULL)
   }
 
@@ -310,14 +347,13 @@ csmtc <- function(base, comb = "ols", res = NULL, approach = "proj",
   n <- NCOL(base[[1]])
   p <- length(base)
 
-  if(!is.null(agg_mat)){
+  if (!is.null(agg_mat)) {
     tmp <- cstools(agg_mat = agg_mat)
     agg_mat <- tmp$agg_mat
     strc_mat <- tmp$strc_mat
   }
 
-
-  ina <- sapply(base, function(bmat){
+  ina <- sapply(base, function(bmat) {
     apply(bmat, 2, function(x) all(is.na(x)))
   })
 
@@ -327,44 +363,57 @@ csmtc <- function(base, comb = "ols", res = NULL, approach = "proj",
   base <- lapply(base, rbind)
   base <- do.call(cbind, base)
 
-  if(NCOL(base) != n*p){
+  if (NCOL(base) != n * p) {
     cli_abort("Incorrect {.arg base} columns dimension.", call = NULL)
   }
   base <- base[, !as.vector(ina), drop = FALSE]
 
   # Compute covariance
-  if(!is.null(res)){
+  if (!is.null(res)) {
     res <- do.call(cbind, res)
     res <- res[, !as.vector(ina), drop = FALSE]
   }
 
-  cov_mat <- cscov(comb = comb,  n = ifelse(comb == "ols", NCOL(base), n), matNA = ina, p = p,
-                   agg_mat = rbind(do.call(rbind, rep(list(strc_mat), p-1)), agg_mat),
-                   res = res, ...)
+  cov_mat <- cscov(
+    comb = comb,
+    n = ifelse(comb == "ols", NCOL(base), n),
+    matNA = ina,
+    p = p,
+    agg_mat = rbind(do.call(rbind, rep(list(strc_mat), p - 1)), agg_mat),
+    res = res,
+    ...
+  )
 
-  if(NROW(cov_mat) != NCOL(base) | NCOL(cov_mat) != NCOL(base)){
-    if(any(as.vector(ina))){
+  if (NROW(cov_mat) != NCOL(base) | NCOL(cov_mat) != NCOL(base)) {
+    if (any(as.vector(ina))) {
       cov_mat <- cov_mat[!as.vector(ina), !as.vector(ina), drop = FALSE]
-    }else{
-      cli_abort(c("Incorrect covariance dimensions.",
-                  "i"="Check {.arg res} dimensions."), call = NULL)
+    } else {
+      cli_abort(
+        c(
+          "Incorrect covariance dimensions.",
+          "i" = "Check {.arg res} dimensions."
+        ),
+        call = NULL
+      )
     }
   }
 
-  mtfore <- mtfc(base = base,
-                 cov_mat = cov_mat,
-                 approach = approach,
-                 nn = nn,
-                 ina = as.vector(ina),
-                 p = p,
-                 n = n,
-                 bounds = bounds,
-                 settings = settings)
+  mtfore <- mtfc(
+    base = base,
+    cov_mat = cov_mat,
+    approach = approach,
+    nn = nn,
+    ina = as.vector(ina),
+    p = p,
+    n = n,
+    bounds = bounds,
+    settings = settings
+  )
 
   rownames(mtfore) <- paste0("h-", 1:NROW(mtfore))
-  if(is.null(colnames(base))){
+  if (is.null(colnames(base))) {
     colnames(mtfore) <- paste0("s-", 1:NCOL(mtfore))
-  }else{
+  } else {
     colnames(mtfore) <- rownames(ina)
   }
 

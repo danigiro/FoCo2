@@ -11,9 +11,9 @@ Methods and tools designed to improve the forecast accuracy for a linearly const
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/danigiro/FoCo2/}
+  \item \url{https://github.com/danigiro/FoCo2}
   \item \url{https://danigiro.github.io/FoCo2/}
-  \item Report bugs at \url{https://github.com/danigiro/FoCo2/issues/}
+  \item Report bugs at \url{https://github.com/danigiro/FoCo2/issues}
 }
 
 }

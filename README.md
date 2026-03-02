@@ -1,15 +1,15 @@
 
 # FoCo² <img src="man/figures/logo.svg" title="S'i' fosse foco, arderei 'l mondo (Sonetti, 86) Cecco Angiolieri, Italian poet." alt="logo" align="right" width="150" style="border: none; float: right;"/>
 
-<!--[![CRAN status](https://www.r-pkg.org/badges/version/FoCo2)](https://CRAN.R-project.org/package=FoCo2)-->
-
+[![R-CMD-check](https://github.com/danigiro/FoCo2/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/danigiro/FoCo2/actions/workflows/R-CMD-check.yaml)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/FoCo2)](https://CRAN.R-project.org/package=FoCo2)
 [![devel
-version](https://img.shields.io/badge/devel%20version-0.1.2.9000-blue.svg)](https://github.com/daniGiro/FoCo2)
+version](https://img.shields.io/badge/devel%20version-0.1.3-blue.svg)](https://github.com/danigiro/FoCo2)
 [![License:
 GPL-3](https://img.shields.io/badge/license-GPL--3-forestgreen.svg)](https://cran.r-project.org/web/licenses/GPL-3)
-[![R-CMD-check](https://github.com/danigiro/FoCo2/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/danigiro/FoCo2/actions/workflows/R-CMD-check.yaml)
 
 > *S’i’ fosse foco, arderei ’l mondo* (Sonetti, 86) Cecco Angiolieri,
 > Italian poet.
@@ -52,7 +52,9 @@ devtools::install_github("danigiro/FoCo2")
 ```
 
 <!-- ## Other forecast reconciliation package -->
+
 <!-- [**FoReco**](https://github.com/daniGiro/FoReco) <img src="man/figures/foreco.svg" alt="foreco" width="75" height="75" style="border: none; float: left;"/>\ -->
+
 <!-- Classical (bottom-up and top-down), optimal combination and heuristic point ([Di Fonzo and Girolimetto, 2023](https://doi.org/10.1016/j.ijforecast.2021.08.004)) and probabilistic ([Girolimetto et al. 2023](https://doi.org/10.1016/j.ijforecast.2023.10.003)) forecast reconciliation procedures for linearly constrained time series (e.g., hierarchical or grouped time series) in cross-sectional, temporal, or cross-temporal frameworks. -->
 
 ## Issues and Contributions

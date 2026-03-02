@@ -1,7 +1,7 @@
 Package: FoCo2
 Type: Package
 Title: Coherent Forecast Combination for Linearly Constrained Multiple Time Series
-Version: 0.1.2.9000
+Version: 0.1.3
 Authors@R: 
     c(person(given = "Daniele",
              family = "Girolimetto",
@@ -26,8 +26,8 @@ Depends: R (>= 3.4), Matrix, FoReco
 Imports: stats, cli, methods, quadprog, osqp
 RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
-URL: https://github.com/danigiro/FoCo2/, https://danigiro.github.io/FoCo2/
-BugReports: https://github.com/danigiro/FoCo2/issues/
+URL: https://github.com/danigiro/FoCo2, https://danigiro.github.io/FoCo2/
+BugReports: https://github.com/danigiro/FoCo2/issues
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
