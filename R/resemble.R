@@ -267,7 +267,7 @@ resemble.proj_osqp <- function(
 
   if (is.null(settings)) {
     if ("polishing" %in% names(as.list(args(osqpSettings)))) {
-      settings <- osqpSettings(
+      settings <- list(
         verbose = FALSE,
         eps_abs = 1e-5,
         eps_rel = 1e-5,
@@ -275,7 +275,7 @@ resemble.proj_osqp <- function(
         polishing = TRUE
       )
     } else {
-      settings <- osqpSettings(
+      settings <- list(
         verbose = FALSE,
         eps_abs = 1e-5,
         eps_rel = 1e-5,
@@ -283,6 +283,7 @@ resemble.proj_osqp <- function(
         polish = TRUE
       )
     }
+    settings <- do.call(osqpSettings, settings)
   }
 
   # OSQP
@@ -490,7 +491,7 @@ resemble.strc_osqp <- function(
 
   if (is.null(settings)) {
     if ("polishing" %in% names(as.list(args(osqpSettings)))) {
-      settings <- osqpSettings(
+      settings <- list(
         verbose = FALSE,
         eps_abs = 1e-6,
         eps_rel = 1e-6,
@@ -498,7 +499,7 @@ resemble.strc_osqp <- function(
         polishing = TRUE
       )
     } else {
-      settings <- osqpSettings(
+      settings <- list(
         verbose = FALSE,
         eps_abs = 1e-6,
         eps_rel = 1e-6,
@@ -506,6 +507,7 @@ resemble.strc_osqp <- function(
         polish = TRUE
       )
     }
+    settings <- do.call(osqpSettings, settings)
   }
 
   # OSQP
