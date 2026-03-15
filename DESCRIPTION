@@ -1,7 +1,7 @@
 Package: FoCo2
 Type: Package
 Title: Coherent Forecast Combination for Linearly Constrained Multiple Time Series
-Version: 0.1.3
+Version: 0.1.3.9000
 Authors@R: 
     c(person(given = "Daniele",
              family = "Girolimetto",
