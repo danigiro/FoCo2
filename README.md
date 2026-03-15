@@ -7,7 +7,7 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 [![CRAN
 status](https://www.r-pkg.org/badges/version/FoCo2)](https://CRAN.R-project.org/package=FoCo2)
 [![devel
-version](https://img.shields.io/badge/devel%20version-0.1.3-blue.svg)](https://github.com/danigiro/FoCo2)
+version](https://img.shields.io/badge/devel%20version-0.1.3.9000-blue.svg)](https://github.com/danigiro/FoCo2)
 [![License:
 GPL-3](https://img.shields.io/badge/license-GPL--3-forestgreen.svg)](https://cran.r-project.org/web/licenses/GPL-3)
 
