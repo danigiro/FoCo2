@@ -223,6 +223,8 @@ csocc <- function(
       )
     }
   }
+  lambda_info <- attr(cov_mat, "lambda")
+
   reco_mat <- resemble(
     base = base,
     cov_mat = cov_mat,
@@ -242,17 +244,32 @@ csocc <- function(
   } else {
     colnames(reco_mat) <- rownames(ina)
   }
-
-  attr(reco_mat, "FoReco") <- new_foreco_info(list(
-    info = attr(reco_mat, "info"),
-    framework = "Cross-sectional",
-    forecast_horizon = NROW(reco_mat),
-    comb = comb,
-    cs_n = n,
-    rfun = "csocc"
-  ))
+  nn_info <- attr(reco_mat, "info")
   attr(reco_mat, "info") <- NULL
-  return(reco_mat)
+  return(new_foreco_class(
+    reco_mat,
+    framework = "cross-sectional",
+    rfun = "csocc",
+    rtype = "point",
+    rinfo = list(
+      cov_info = list(lambda = lambda_info),
+      forecast_horizon = NROW(reco_mat),
+      comb = ifelse(is.character(comb), comb, "custom"),
+      cs_n = n,
+      nn = all(!(reco_mat < 0))
+    ),
+    nninfo = nn_info
+  ))
+  # attr(reco_mat, "FoReco") <- new_foreco_info(list(
+  #   info = attr(reco_mat, "info"),
+  #   framework = "Cross-sectional",
+  #   forecast_horizon = NROW(reco_mat),
+  #   comb = comb,
+  #   cs_n = n,
+  #   rfun = "csocc"
+  # ))
+  # attr(reco_mat, "info") <- NULL
+  # return(reco_mat)
 }
 
 #' Cross-sectional optimal multi-task forecast combination

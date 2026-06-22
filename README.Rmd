@@ -28,7 +28,7 @@ The package is designed to manage different levels of input complexity: for exam
 
 ## Installation
 
-You can install the **stable** version on [R CRAN](https://cran.r-project.org/)
+You can install the **stable** version on [R CRAN](https://CRAN.R-project.org/package=FoCo2)
 
 ``` r
 install.packages("FoCo2")

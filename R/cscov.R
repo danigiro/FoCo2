@@ -43,60 +43,70 @@
 #' @family Optimal combination
 #'
 #' @exportS3Method FoReco::cscov
-cscov.shrbe <- function(comb = "shrbe", ..., n = NULL, p = NULL, matNA = NULL,
-                        res = NULL, mse = TRUE, shrink_fun = NULL){
-
-  if(is.null(n)){
-    if(is.list(res)){
+cscov.shrbe <- function(
+  comb = "shrbe",
+  ...,
+  n = NULL,
+  p = NULL,
+  matNA = NULL,
+  res = NULL,
+  mse = TRUE,
+  shrink_fun = NULL
+) {
+  if (is.null(n)) {
+    if (is.list(res)) {
       n <- NCOL(res[[1]])
-    }else{
+    } else {
       cli_abort("Argument {.arg n} is NULL.", call = NULL)
     }
   }
 
-  if(is.null(p)){
-    if(is.list(res)){
+  if (is.null(p)) {
+    if (is.list(res)) {
       p <- length(res)
-    }else{
+    } else {
       cli_abort("Argument {.arg p} is NULL.", call = NULL)
     }
   }
 
-  if(is.null(res)){
+  if (is.null(res)) {
     cli_abort("Argument {.arg res} is NULL.", call = NULL)
   }
 
-  if(is.list(res)){
+  if (is.list(res)) {
     res <- do.call(cbind, res)
   }
   id <- rep(1:p, each = n)
-  if(!is.null(matNA)){
-    if(is.logical(matNA)){
+  if (!is.null(matNA)) {
+    if (is.logical(matNA)) {
       ina <- as.vector(!matNA)
-    }else{
-      ina <- as.vector(is.na(matNA) | matNA!=0)
+    } else {
+      ina <- as.vector(is.na(matNA) | matNA != 0)
     }
-    if(NCOL(res) != sum(ina)){
-      res <- res[,ina, drop = FALSE]
+    if (NCOL(res) != sum(ina)) {
+      res <- res[, ina, drop = FALSE]
     }
     id <- id[ina]
   }
 
-  if(is.null(shrink_fun)){
-    if(!is.null(matNA)){
-      if(sum(ina) == n*p){
+  if (is.null(shrink_fun)) {
+    if (!is.null(matNA)) {
+      if (sum(ina) == n * p) {
         shrink_fun <- shrink_estim
-      }else{
+      } else {
         shrink_fun <- shrink_estim_na
       }
-    }else{
+    } else {
       shrink_fun <- shrink_estim_na
     }
   }
-  Wlist <- lapply(sort(unique(id)), function(i){
+  Wlist <- lapply(sort(unique(id)), function(i) {
     shrink_fun(res[, id == i, drop = FALSE], mse = mse)
   })
-  bdiag(Wlist)
+  lambda <- sapply(Wlist, attr, "lambda")
+  Wlist <- bdiag(Wlist)
+  attr(Wlist, "lambda") <- lambda
+  return(Wlist)
 }
 
 #' @usage
@@ -104,45 +114,52 @@ cscov.shrbe <- function(comb = "shrbe", ..., n = NULL, p = NULL, matNA = NULL,
 #'       res = NULL, mse = TRUE)
 #' @rdname cscov
 #' @exportS3Method FoReco::cscov
-cscov.sambe <- function(comb = "sambe", ..., n = NULL, p = NULL, matNA = NULL,
-                        res = NULL, mse = TRUE){
-  if(is.null(n)){
-    if(is.list(res)){
+cscov.sambe <- function(
+  comb = "sambe",
+  ...,
+  n = NULL,
+  p = NULL,
+  matNA = NULL,
+  res = NULL,
+  mse = TRUE
+) {
+  if (is.null(n)) {
+    if (is.list(res)) {
       n <- NCOL(res[[1]])
-    }else{
+    } else {
       cli_abort("Argument {.arg n} is NULL.", call = NULL)
     }
   }
 
-  if(is.null(p)){
-    if(is.list(res)){
+  if (is.null(p)) {
+    if (is.list(res)) {
       p <- length(res)
-    }else{
+    } else {
       cli_abort("Argument {.arg p} is NULL.", call = NULL)
     }
   }
 
-  if(is.null(res)){
+  if (is.null(res)) {
     cli_abort("Argument {.arg res} is NULL.", call = NULL)
   }
 
-  if(is.list(res)){
+  if (is.list(res)) {
     res <- do.call(cbind, res)
   }
   id <- rep(1:p, each = n)
-  if(!is.null(matNA)){
-    if(is.logical(matNA)){
+  if (!is.null(matNA)) {
+    if (is.logical(matNA)) {
       ina <- as.vector(!matNA)
-    }else{
-      ina <- as.vector(is.na(matNA) | matNA!=0)
+    } else {
+      ina <- as.vector(is.na(matNA) | matNA != 0)
     }
-    if(NCOL(res) != sum(ina)){
-      res <- res[,ina, drop = FALSE]
+    if (NCOL(res) != sum(ina)) {
+      res <- res[, ina, drop = FALSE]
     }
     id <- id[ina]
   }
 
-  Wlist <- lapply(sort(unique(id)), function(i){
+  Wlist <- lapply(sort(unique(id)), function(i) {
     sample_estim(res[, id == i, drop = FALSE], mse = mse)
   })
   bdiag(Wlist)
@@ -153,70 +170,80 @@ cscov.sambe <- function(comb = "sambe", ..., n = NULL, p = NULL, matNA = NULL,
 #'       res = NULL, mse = TRUE, shrink_fun = NULL)
 #' @rdname cscov
 #' @exportS3Method FoReco::cscov
-cscov.shrbv <- function(comb = "shrbv", ..., n = NULL, p = NULL, matNA = NULL,
-                        res = NULL, mse = TRUE, shrink_fun = NULL){
-  if(is.null(n)){
-    if(is.list(res)){
+cscov.shrbv <- function(
+  comb = "shrbv",
+  ...,
+  n = NULL,
+  p = NULL,
+  matNA = NULL,
+  res = NULL,
+  mse = TRUE,
+  shrink_fun = NULL
+) {
+  if (is.null(n)) {
+    if (is.list(res)) {
       n <- NCOL(res[[1]])
-    }else{
+    } else {
       cli_abort("Argument {.arg n} is NULL.", call = NULL)
     }
   }
 
-  if(is.null(p)){
-    if(is.list(res)){
+  if (is.null(p)) {
+    if (is.list(res)) {
       p <- length(res)
-    }else{
+    } else {
       cli_abort("Argument {.arg p} is NULL.", call = NULL)
     }
   }
 
-  if(is.null(res)){
+  if (is.null(res)) {
     cli_abort("Argument {.arg res} is NULL.", call = NULL)
   }
 
-  if(is.list(res)){
+  if (is.list(res)) {
     res <- do.call(cbind, res)
   }
   id <- rep(1:n, p)
-  if(!is.null(matNA)){
-    if(is.logical(matNA)){
+  if (!is.null(matNA)) {
+    if (is.logical(matNA)) {
       ina <- as.vector(!matNA)
-    }else{
-      ina <- as.vector(is.na(matNA) | matNA!=0)
+    } else {
+      ina <- as.vector(is.na(matNA) | matNA != 0)
     }
-    if(NCOL(res) != sum(ina)){
-      res <- res[,ina, drop = FALSE]
+    if (NCOL(res) != sum(ina)) {
+      res <- res[, ina, drop = FALSE]
     }
     id <- id[ina]
   }
 
-  if(is.null(shrink_fun)){
-    if(!is.null(matNA)){
-      if(sum(ina) == n*p){
+  if (is.null(shrink_fun)) {
+    if (!is.null(matNA)) {
+      if (sum(ina) == n * p) {
         shrink_fun <- shrink_estim
-      }else{
+      } else {
         shrink_fun <- shrink_estim_na
       }
-    }else{
+    } else {
       shrink_fun <- shrink_estim_na
     }
   }
 
-  Slist <- lapply(sort(unique(id)), function(i){
+  Slist <- lapply(sort(unique(id)), function(i) {
     shrink_fun(res[, id == i, drop = FALSE], mse = mse)
   })
   cov_mat <- bdiag(Slist)
+  lambda <- sapply(Slist, attr, "lambda")
 
   P <- commat(n, p)
-  if(!is.null(matNA)){
-    if(any(!ina)){
+  if (!is.null(matNA)) {
+    if (any(!ina)) {
       P <- P[, ina, drop = FALSE]
-      P <- P[rowSums(P)!=0, , drop = FALSE]
+      P <- P[rowSums(P) != 0, , drop = FALSE]
     }
   }
-  t(P)%*%cov_mat%*%P
-
+  cov_mat <- t(P) %*% cov_mat %*% P
+  attr(cov_mat, "lambda") <- lambda
+  return(cov_mat)
 }
 
 #' @usage
@@ -224,55 +251,62 @@ cscov.shrbv <- function(comb = "shrbv", ..., n = NULL, p = NULL, matNA = NULL,
 #'       res = NULL, mse = TRUE)
 #' @rdname cscov
 #' @exportS3Method FoReco::cscov
-cscov.sambv <- function(comb = "sambv", ..., n = NULL, p = NULL, matNA = NULL,
-                        res = NULL, mse = TRUE){
-  if(is.null(n)){
-    if(is.list(res)){
+cscov.sambv <- function(
+  comb = "sambv",
+  ...,
+  n = NULL,
+  p = NULL,
+  matNA = NULL,
+  res = NULL,
+  mse = TRUE
+) {
+  if (is.null(n)) {
+    if (is.list(res)) {
       n <- NCOL(res[[1]])
-    }else{
+    } else {
       cli_abort("Argument {.arg n} is NULL.", call = NULL)
     }
   }
 
-  if(is.null(p)){
-    if(is.list(res)){
+  if (is.null(p)) {
+    if (is.list(res)) {
       p <- length(res)
-    }else{
+    } else {
       cli_abort("Argument {.arg p} is NULL.", call = NULL)
     }
   }
 
-  if(is.null(res)){
+  if (is.null(res)) {
     cli_abort("Argument {.arg res} is NULL.", call = NULL)
   }
 
-  if(is.list(res)){
+  if (is.list(res)) {
     res <- do.call(cbind, res)
   }
   id <- rep(1:n, p)
-  if(!is.null(matNA)){
-    if(is.logical(matNA)){
+  if (!is.null(matNA)) {
+    if (is.logical(matNA)) {
       ina <- as.vector(!matNA)
-    }else{
-      ina <- as.vector(is.na(matNA) | matNA!=0)
+    } else {
+      ina <- as.vector(is.na(matNA) | matNA != 0)
     }
-    if(NCOL(res) != sum(ina)){
-      res <- res[,ina, drop = FALSE]
+    if (NCOL(res) != sum(ina)) {
+      res <- res[, ina, drop = FALSE]
     }
     id <- id[ina]
   }
 
-  Slist <- lapply(sort(unique(id)), function(i){
+  Slist <- lapply(sort(unique(id)), function(i) {
     sample_estim(res[, id == i, drop = FALSE], mse = mse)
   })
   cov_mat <- bdiag(Slist)
 
   P <- commat(n, p)
-  if(!is.null(matNA)){
-    if(any(!ina)){
+  if (!is.null(matNA)) {
+    if (any(!ina)) {
       P <- P[, ina, drop = FALSE]
-      P <- P[rowSums(P)!=0, , drop = FALSE]
+      P <- P[rowSums(P) != 0, , drop = FALSE]
     }
   }
-  t(P)%*%cov_mat%*%P
+  t(P) %*% cov_mat %*% P
 }

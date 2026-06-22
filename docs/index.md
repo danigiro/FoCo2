@@ -1,5 +1,4 @@
-
-# FoCo² <img src="man/figures/logo.svg" title="S'i' fosse foco, arderei 'l mondo (Sonetti, 86) Cecco Angiolieri, Italian poet." alt="logo" align="right" width="150" style="border: none; float: right;"/>
+# FoCo²
 
 [![R-CMD-check](https://github.com/danigiro/FoCo2/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/danigiro/FoCo2/actions/workflows/R-CMD-check.yaml)
 [![Lifecycle:
@@ -40,6 +39,7 @@ You can install the **stable** version on [R
 CRAN](https://CRAN.R-project.org/package=FoCo2)
 
 ``` r
+
 install.packages("FoCo2")
 ```
 
@@ -47,15 +47,10 @@ You can also install the **development** version from
 [Github](https://github.com/daniGiro/FoCo2)
 
 ``` r
+
 # install.packages("devtools")
 devtools::install_github("danigiro/FoCo2")
 ```
-
-<!-- ## Other forecast reconciliation package -->
-
-<!-- [**FoReco**](https://github.com/daniGiro/FoReco) <img src="man/figures/foreco.svg" alt="foreco" width="75" height="75" style="border: none; float: left;"/>\ -->
-
-<!-- Classical (bottom-up and top-down), optimal combination and heuristic point ([Di Fonzo and Girolimetto, 2023](https://doi.org/10.1016/j.ijforecast.2021.08.004)) and probabilistic ([Girolimetto et al. 2023](https://doi.org/10.1016/j.ijforecast.2023.10.003)) forecast reconciliation procedures for linearly constrained time series (e.g., hierarchical or grouped time series) in cross-sectional, temporal, or cross-temporal frameworks. -->
 
 ## Issues and Contributions
 

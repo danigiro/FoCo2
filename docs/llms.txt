@@ -1,5 +1,4 @@
-
-# FoCo² <img src="man/figures/logo.svg" title="S'i' fosse foco, arderei 'l mondo (Sonetti, 86) Cecco Angiolieri, Italian poet." alt="logo" align="right" width="150" style="border: none; float: right;"/>
+# FoCo²
 
 [![R-CMD-check](https://github.com/danigiro/FoCo2/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/danigiro/FoCo2/actions/workflows/R-CMD-check.yaml)
 [![Lifecycle:
@@ -40,6 +39,7 @@ You can install the **stable** version on [R
 CRAN](https://CRAN.R-project.org/package=FoCo2)
 
 ``` r
+
 install.packages("FoCo2")
 ```
 
@@ -47,15 +47,10 @@ You can also install the **development** version from
 [Github](https://github.com/daniGiro/FoCo2)
 
 ``` r
+
 # install.packages("devtools")
 devtools::install_github("danigiro/FoCo2")
 ```
-
-<!-- ## Other forecast reconciliation package -->
-
-<!-- [**FoReco**](https://github.com/daniGiro/FoReco) <img src="man/figures/foreco.svg" alt="foreco" width="75" height="75" style="border: none; float: left;"/>\ -->
-
-<!-- Classical (bottom-up and top-down), optimal combination and heuristic point ([Di Fonzo and Girolimetto, 2023](https://doi.org/10.1016/j.ijforecast.2021.08.004)) and probabilistic ([Girolimetto et al. 2023](https://doi.org/10.1016/j.ijforecast.2023.10.003)) forecast reconciliation procedures for linearly constrained time series (e.g., hierarchical or grouped time series) in cross-sectional, temporal, or cross-temporal frameworks. -->
 
 ## Issues and Contributions
 
@@ -63,3 +58,37 @@ If you encounter any bugs or have suggestions for improvements, please
 feel free to report them on [GitHub Issues
 page](https://github.com/daniGiro/FoCo2/issues). Contributions are also
 welcome!
+
+# Package index
+
+## Optimal forecast combination
+
+- [`csocc()`](https://danigiro.github.io/FoCo2/reference/csocc.md) :
+  Cross-sectional optimal coherent forecast combination
+- [`csmtc()`](https://danigiro.github.io/FoCo2/reference/csmtc.md) :
+  Cross-sectional optimal multi-task forecast combination
+
+## Sequential coherent forecast combination
+
+- [`csscr()`](https://danigiro.github.io/FoCo2/reference/csscr.md) :
+  Cross-sectional sequential combination-reconciliation
+- [`cssrc()`](https://danigiro.github.io/FoCo2/reference/cssrc.md) :
+  Cross-sectional sequential reconciliation-combination
+
+## Utilities
+
+- [`cscov(`*`<shrbe>`*`)`](https://danigiro.github.io/FoCo2/reference/cscov.md)
+  [`cscov(`*`<sambe>`*`)`](https://danigiro.github.io/FoCo2/reference/cscov.md)
+  [`cscov(`*`<shrbv>`*`)`](https://danigiro.github.io/FoCo2/reference/cscov.md)
+  [`cscov(`*`<sambv>`*`)`](https://danigiro.github.io/FoCo2/reference/cscov.md)
+  : Cross-sectional covariance matrix approximation
+- [`occmat()`](https://danigiro.github.io/FoCo2/reference/occmat.md) :
+  Matrices for the optimal coherent forecast combination
+
+## Package
+
+- [`FoCo2`](https://danigiro.github.io/FoCo2/reference/FoCo2-package.md)
+  [`FoCo2-package`](https://danigiro.github.io/FoCo2/reference/FoCo2-package.md)
+  : FoCo2: Coherent Forecast Combination for Linearly Constrained
+  Multiple Time Series
+
