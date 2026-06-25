@@ -14,13 +14,13 @@ Source:
 [`DESCRIPTION`](https://github.com/danigiro/FoCo2/blob/HEAD/DESCRIPTION)
 
 Girolimetto D, Di Fonzo T (2026). *FoCo2: Coherent Forecast Combination
-for Linearly Constrained Multiple Time Series*. R package version 0.1.4,
-<https://github.com/danigiro/FoCo2>.
+for Linearly Constrained Multiple Time Series*. R package version
+0.1.4.9000, <https://github.com/danigiro/FoCo2>.
 
     @Manual{,
       title = {FoCo2: Coherent Forecast Combination for Linearly Constrained Multiple Time Series},
       author = {Daniele Girolimetto and Tommaso {Di Fonzo}},
       year = {2026},
-      note = {R package version 0.1.4},
+      note = {R package version 0.1.4.9000},
       url = {https://github.com/danigiro/FoCo2},
     }
